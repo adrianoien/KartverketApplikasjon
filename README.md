@@ -1,1 +1,2 @@
-# KartverketApplikasjon
+KartverketApplikasjon
+README-fil
