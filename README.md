@@ -1,2 +1,2 @@
-# KartverketApplikasjon
-Dette er en readme fil
+KartverketApplikasjon
+README-fil
