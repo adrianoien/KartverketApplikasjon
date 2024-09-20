@@ -1,0 +1,44 @@
+﻿
+@{
+    ViewData["Title"] = "Kart";
+}
+
+<h1>Kart</h1>
+
+
+
+<div id="map" style="height: 700px; width: 800px;"></div>
+
+<head>
+    <!-- Leaflet CSS -->
+     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+    
+     <!-- Make sure you put this AFTER Leaflet's CSS -->
+ <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+</head>
+
+@section Scripts {
+    <script>
+        // Initialize the map and set its view to the desired coordinates and zoom level
+        var map = L.map('map').setView([51.505, -0.09], 13);
+
+        // Add the tile layer from OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+       navigator.geolocation.getCurrentPosition(function (position) {
+         var lat = position.coords.latitude;
+          var lon = position.coords.longitude;
+          map.setView([lat, lon], 13);
+    
+    L.marker([lat, lon]).addTo(map)
+        .bindPopup('Du er her').openPopup();
+});
+    </script>
+   }
