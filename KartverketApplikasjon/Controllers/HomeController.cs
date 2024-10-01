@@ -11,6 +11,8 @@ namespace KartverketApplikasjon.Controllers
         
         // Definerer en liste som en in-memory lagring
         private static List<MapCorrections> positions = new List<MapCorrections>();
+        
+        private static List<AreaChange> changes = new List<AreaChange>();
 
         public HomeController(ILogger<HomeController> logger)
         {
@@ -59,6 +61,38 @@ namespace KartverketApplikasjon.Controllers
             return View(positions);
         }
 
+        // Handles form submission to register a new change
+        [HttpGet]
+        public IActionResult RegisterAreaChange()
+        {
+            return View();
+        }
+        
+        // Handles form submission to register a new change
+        [HttpPost]
+        public IActionResult RegisterAreaChange(string geoJson, string description)
+        {
+            var newChange = new AreaChange
+            {
+                Id = Guid.NewGuid().ToString(),
+                GeoJson = geoJson,
+                Description = description
+            };
+            
+            // Save the change in the static in-memory list
+            changes.Add(newChange);
+            
+            // Redirect to the overview of changes
+            return RedirectToAction("AreaChangeOverview");
+        }
+        
+        // Display the overview of registered changes
+        [HttpGet]
+        public IActionResult AreaChangeOverview()
+        {
+            return View(changes);
+        }
+        
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
