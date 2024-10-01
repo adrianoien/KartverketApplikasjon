@@ -9,8 +9,8 @@ namespace KartverketApplikasjon.Models
         [Required]
         public string Description { get; set; }
         [Required]
-        public string X { get; set; }
+        public string Latitude { get; set; }
         [Required]
-        public string Y { get; set; }
+        public string Longitude { get; set; }
     }
 }
