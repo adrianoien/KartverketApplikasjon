@@ -33,6 +33,34 @@
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
+        // Funksjon for å håndtere geolokalisering
+        function locateUser() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    var lat = position.coords.latitude;
+                    var lng = position.coords.longitude;
+
+                    // Set the latitude and longitude fields in the form
+                    document.getElementById('latitude').value = lat;
+                    document.getElementById('longitude').value = lng;
+
+                    // Center the map on the user's location and add a marker
+                    map.setView([lat, lng], 13);
+                    L.marker([lat, lng]).addTo(map)
+                        .bindPopup('You are here!')
+                        .openPopup();
+                }, function () {
+                    alert('Geolocation service failed.');
+                });
+            } else {
+                alert('Your browser doesn\'t support geolocation.');
+            }
+        }
+
+        // Kaller locateUser metoden
+        locateUser();
+
+
         // Map click event
         map.on('click', function(e) {
             // Get clicked position
