@@ -31,6 +31,12 @@ namespace KartverketApplikasjon.Controllers
             return View();
         }
 
+        // Action metode som håndterer POST forespørsel og mottar data fra brukeren 
+        [HttpPost]
+        public ViewResult RegistrationForm(UserData userData)
+        {
+            return View("RegistrationOverview", userData);
+        }
         public IActionResult Privacy()
         {
             return View();
