@@ -24,6 +24,13 @@ namespace KartverketApplikasjon.Controllers
             return View();
         }
 
+        // Action metode som håndterer og vister RegForm view
+        [HttpGet]
+        public ViewResult RegistrationForm()
+        {
+            return View();
+        }
+
         public IActionResult Privacy()
         {
             return View();
