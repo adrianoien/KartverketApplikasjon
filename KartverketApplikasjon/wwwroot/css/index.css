@@ -1,0 +1,84 @@
+﻿body, html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: Mulish
+}
+
+.navbar {
+    background-color: white !important;
+    padding: 0.5rem 1rem;
+}
+
+.navbar-brand img {
+    height: 40px;
+}
+
+.hero-image {
+    background-image: url("/images/landskap.jpg");
+    height: 90vh;
+    width: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+}
+
+.hero-text {
+    text-align: left;
+    position: absolute;
+    top: 25%;
+    left: 5%;
+    transform: translateY(-50%);
+    color: white;
+    max-width: 50%;
+    
+}
+
+    .hero-text h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .hero-text p {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+.hero-button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 1rem;
+}
+
+.content-section {
+    padding: 2rem 10%;
+    text-align: center;
+}
+
+    .content-section h2 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+
+
+
+.btn-success {
+    background-color: white; /* Default button color */
+    color: #4CAF50; /* Text color for the default state */
+    border: 2px solid #4CAF50; /* Optional: border color */
+    padding: 10px 20px; /* Ensure proper padding */
+    border-radius: 5px; /* Round the corners */
+    text-decoration: none; /* Remove underline for links */
+    font-size: 1rem; /* Font size */
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+}
+
+    .btn-success:hover {
+        background-color: #4CAF50; /* Background color on hover */
+        color: white; /* Text color on hover */
+    }
