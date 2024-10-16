@@ -1,0 +1,36 @@
+version: '3.8'
+services:
+  mariadb:
+    image: mariadb:latest
+    container_name: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: 12345678
+      MYSQL_DATABASE: geochangesdb
+      MYSQL_USER: root
+      MYSQL_PASSWORD: 12345678
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - backend
+
+  KartverketApplikasjon:
+    image: ${DOCKER_REGISTRY-}KartverketApplikasjon
+    build:
+      context: .
+      dockerfile: KartverketApplikasjon/Dockerfile
+    ports:
+      - "5000:80"
+    depends_on:
+      - mariadb
+    environment:
+      ConnectionStrings__DefaultConnection: "Server=mariadb;Database=geochangesdb;User=root;Password=12345678;"
+    networks:
+      - backend
+
+volumes:
+  mariadb_data:
+
+networks:
+  backend:
