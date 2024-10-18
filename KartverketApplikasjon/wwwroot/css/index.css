@@ -68,17 +68,17 @@
 
 
 .btn-success {
-    background-color: white; /* Default button color */
-    color: #4CAF50; /* Text color for the default state */
-    border: 2px solid #4CAF50; /* Optional: border color */
-    padding: 10px 20px; /* Ensure proper padding */
-    border-radius: 5px; /* Round the corners */
-    text-decoration: none; /* Remove underline for links */
-    font-size: 1rem; /* Font size */
-    transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+    background-color: darkgreen;
+    color: #4CAF50;
+    border: 2px solid;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 1rem;
+    transition: background-color 0.3s, color 0.3s;
 }
 
     .btn-success:hover {
-        background-color: #4CAF50; /* Background color on hover */
-        color: white; /* Text color on hover */
+        background-color: #4CAF50;
+        color: #4CAF50;
     }

@@ -24,23 +24,7 @@ namespace KartverketApplikasjon.Controllers
             return View();
         }
 
-        // Action metode som håndterer og vister RegForm view
-        [HttpGet]
-        public ViewResult RegistrationForm()
-        {
-            return View();
-        }
-
-        // Action metode som håndterer POST forespørsel og mottar data fra brukeren 
-        [HttpPost]
-        public ViewResult RegistrationForm(UserData userData)
-        {
-            return View("RegistrationOverview", userData);
-        }
-        public IActionResult Privacy()
-        {
-            return View();
-        }
+        
 
         public IActionResult Kart()
         {
