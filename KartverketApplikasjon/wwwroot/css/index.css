@@ -68,8 +68,8 @@
 
 
 .btn-success {
-    background-color: darkgreen;
-    color: #4CAF50;
+    background-color: #4CAF50;
+    
     border: 2px solid;
     padding: 10px 20px;
     border-radius: 5px;
@@ -79,6 +79,6 @@
 }
 
     .btn-success:hover {
-        background-color: #4CAF50;
+        background-color: white;
         color: #4CAF50;
     }

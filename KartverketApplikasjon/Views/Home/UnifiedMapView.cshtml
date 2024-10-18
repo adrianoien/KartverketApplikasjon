@@ -1,0 +1,154 @@
+﻿@model KartverketApplikasjon.Models.UnifiedMapViewModel
+
+<h2>Kartverket Map Interface</h2>
+
+<div class="row">
+    <div class="col-md-8">
+        <div id="map" style="height: 600px;"></div>
+    </div>
+    <div class="col-md-4">
+        <form id="dataSubmissionForm">
+            <h3>Submit Data</h3>
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <textarea id="description" name="description" class="form-control" required></textarea>
+            </div>
+            <input type="hidden" id="geoJsonInput" name="geoJson" />
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+
+        <div id="dataOverview" style="margin-top: 20px;">
+            <h3>Data Overview</h3>
+            <ul id="dataList" class="list-group">
+                <!-- Data items will be dynamically added here -->
+            </ul>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+
+    <script>
+        var map, drawnItems;
+
+        function initMap() {
+            map = L.map('map').setView([59.9139, 10.7522], 7);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            drawnItems = new L.FeatureGroup().addTo(map);
+
+            var drawControl = new L.Control.Draw({
+                edit: { featureGroup: drawnItems },
+                draw: {
+                    polygon: true,
+                    polyline: true,
+                    rectangle: true,
+                    circle: false,
+                    marker: true
+                }
+            });
+            map.addControl(drawControl);
+
+            map.on(L.Draw.Event.CREATED, function (event) {
+                var layer = event.layer;
+                drawnItems.addLayer(layer);
+                updateGeoJsonInput();
+            });
+
+            map.on('click', onMapClick);
+            locateUser();
+            loadExistingData();
+        }
+
+        function locateUser() {
+            map.locate({setView: true, maxZoom: 16});
+        }
+
+        function onMapClick(e) {
+            var lat = e.latlng.lat;
+            var lon = e.latlng.lng;
+            fetchKommuneInfo(lat, lon);
+            reverseGeocode(lat, lon);
+        }
+
+        function fetchKommuneInfo(lat, lon) {
+            var url = `https://api.kartverket.no/kommuneinfo/v1/punkt?nord=${lat}&ost=${lon}&koordsys=4326`;
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.kommunenavn) {
+                        L.popup()
+                            .setLatLng([lat, lon])
+                            .setContent(`Kommune: ${data.kommunenavn} (${data.kommunenummer})`)
+                            .openOn(map);
+                    }
+                })
+                .catch(error => console.error('Error fetching kommune info:', error));
+        }
+
+        function reverseGeocode(lat, lon) {
+            var url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.display_name) {
+                        L.marker([lat, lon]).addTo(map)
+                            .bindPopup(`Address: ${data.display_name}`)
+                            .openPopup();
+                    }
+                })
+                .catch(error => console.error('Error in reverse geocoding:', error));
+        }
+
+        function updateGeoJsonInput() {
+            var geoJsonData = drawnItems.toGeoJSON();
+            document.getElementById('geoJsonInput').value = JSON.stringify(geoJsonData);
+        }
+
+        function loadExistingData() {
+            // Fetch and display existing data from your backend
+            fetch('/Home/GetExistingData')
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(item => {
+                        L.geoJSON(JSON.parse(item.geoJson)).addTo(drawnItems);
+                        addToDataList(item);
+                    });
+                })
+                .catch(error => console.error('Error loading existing data:', error));
+        }
+
+        function addToDataList(item) {
+            var li = document.createElement('li');
+            li.className = 'list-group-item';
+            li.textContent = item.description;
+            document.getElementById('dataList').appendChild(li);
+        }
+
+        document.getElementById('dataSubmissionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+            fetch('/Home/SubmitData', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                addToDataList(data);
+                // Clear the form and drawn items
+                this.reset();
+                drawnItems.clearLayers();
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        initMap();
+    </script>
+}

@@ -1,17 +1,18 @@
+using System;
 using System.Diagnostics;
+using System.Collections.Generic;
 using KartverketApplikasjon.Models;
 using Microsoft.AspNetCore.Mvc;
-using NuGet.Protocol.Core.Types;
+using Microsoft.Extensions.Logging;
 
 namespace KartverketApplikasjon.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        
-        // Definerer en liste som en in-memory lagring
+
+        // Define lists for in-memory storage
         private static List<MapCorrections> positions = new List<MapCorrections>();
-        
         private static List<AreaChange> changes = new List<AreaChange>();
 
         public HomeController(ILogger<HomeController> logger)
@@ -24,8 +25,6 @@ namespace KartverketApplikasjon.Controllers
             return View();
         }
 
-        
-
         public IActionResult Kart()
         {
             return View();
@@ -37,19 +36,40 @@ namespace KartverketApplikasjon.Controllers
             return View();
         }
 
+        public IActionResult MapView()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult GetExistingData()
+        {
+            // For now, we'll return both positions and changes
+            var existingData = new { Positions = positions, Changes = changes };
+            return Json(existingData);
+        }
+
+        [HttpPost]
+        public IActionResult SubmitData([FromBody] AreaChange model)
+        {
+            if (ModelState.IsValid)
+            {
+                model.Id = Guid.NewGuid().ToString();
+                changes.Add(model);
+                return Json(model);
+            }
+            return BadRequest(ModelState);
+        }
+
         [HttpPost]
         public IActionResult CorrectMap(MapCorrections model)
         {
             if (ModelState.IsValid)
             {
-                // Legger til ny posisjon i "positions" listen
                 positions.Add(model);
-            
-                // Viser oppsummering av endring, etter dataen har blitt registrert og lagret i "positions" listen
                 return View("CorrectionsOverview", positions);
             }
-
-            return View();
+            return View(model);
         }
 
         [HttpGet]
@@ -58,14 +78,12 @@ namespace KartverketApplikasjon.Controllers
             return View(positions);
         }
 
-        // Handles form submission to register a new change
         [HttpGet]
         public IActionResult RegisterAreaChange()
         {
             return View();
         }
-        
-        // Handles form submission to register a new change
+
         [HttpPost]
         public IActionResult RegisterAreaChange(string geoJson, string description)
         {
@@ -75,40 +93,22 @@ namespace KartverketApplikasjon.Controllers
                 GeoJson = geoJson,
                 Description = description
             };
-            
-            // Save the change in the static in-memory list
+
             changes.Add(newChange);
-            
-            // Redirect to the overview of changes
+
             return RedirectToAction("AreaChangeOverview");
         }
-        
-        // Display the overview of registered changes
+
         [HttpGet]
         public IActionResult AreaChangeOverview()
         {
             return View(changes);
         }
-        
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
-
-    public class MapData
-    {
-        public List<LatLng> Points { get; set; }
-        public List<List<LatLng>> Lines { get; set; }
-    }
-
-    public class LatLng
-    {
-        public double Lat { get; set; }
-        public double Lng { get; set; }
-    }
-
-   
 }
-
