@@ -1,12 +1,33 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
-
 <div class="hero-image">
     <div class="hero-text">
         <h1>Noe tekst om Kartverket skal her</h1>
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam vehicula vel sem porta porttitor cursus sed eros.</p>
-        <a href="#" class="hero-button">Registrer deg</a>
+        <a href="#" class="hero-button" id="loginButton">Logg inn</a>
     </div>
 </div>
 
+<div id="loginModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Logg inn</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">E-post:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Passord:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Logg inn</button>
+        </form>
+        <p>Har du ikke bruker? <a href="@Url.Action("Register", "Account")">Registrer deg her</a></p>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/login.js"></script>
+}
