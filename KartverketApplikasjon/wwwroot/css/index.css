@@ -69,16 +69,30 @@
 
 .btn-success {
     background-color: #4CAF50;
-    
-    border: 2px solid;
+    color: #ffffff;
+    border: 2px solid #45a049;
     padding: 10px 20px;
     border-radius: 5px;
     text-decoration: none;
     font-size: 1rem;
-    transition: background-color 0.3s, color 0.3s;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
 
     .btn-success:hover {
-        background-color: white;
+        background-color: #45a049;
+        color: #ffffff;
+        border-color: #409444;
+    }
+
+    .btn-success:active {
+        background-color: #ffffff;
         color: #4CAF50;
+        border-color: #4CAF50;
+    }
+
+    .btn-success:disabled {
+        background-color: #7ac97d;
+        color: #ffffff;
+        border-color: #7ac97d;
+        cursor: not-allowed;
     }

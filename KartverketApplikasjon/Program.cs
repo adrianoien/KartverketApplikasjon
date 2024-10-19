@@ -1,7 +1,18 @@
+using Microsoft.EntityFrameworkCore;
+using KartverketApplikasjon.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Add DbContext configuration
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseMySql(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        new MySqlServerVersion(new Version(10, 5, 8)) // Specify your MariaDB version
+    )
+);
 
 var app = builder.Build();
 
