@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using KartverketApplikasjon.Data;
+using KartverketApplikasjon.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,9 +12,24 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
-        new MySqlServerVersion(new Version(10, 5, 8)) // Specify your MariaDB version
+        ServerVersion.Create(10, 5, 8, Pomelo.EntityFrameworkCore.MySql.Infrastructure.ServerType.MariaDb),
+        mySqlOptions => mySqlOptions
+            .EnableRetryOnFailure(
+                maxRetryCount: 10,
+                maxRetryDelay: TimeSpan.FromSeconds(30),
+                errorNumbersToAdd: null)
     )
 );
+// Register UserService with its interface
+builder.Services.AddScoped<IUserService, UserService>();
+
+// Add cookie authentication
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login";
+        options.LogoutPath = "/Account/Logout";
+    });
 
 var app = builder.Build();
 
@@ -26,7 +43,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
+app.UseAuthentication();
 app.UseRouting();
 
 app.UseAuthorization();

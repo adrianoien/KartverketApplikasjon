@@ -10,13 +10,12 @@ namespace KartverketApplikasjon.Controllers
     public class AccountController : Controller
     {
         // Injects UserService to handle user-related logic (registration, authentication, etc.)
-        private readonly UserService _userService;
+        private readonly IUserService _userService;
 
-        public AccountController(UserService userService)
+        public AccountController(IUserService userService)
         {
             _userService = userService;
         }
-
         [HttpGet]
         public IActionResult Register()
         {
@@ -32,7 +31,7 @@ namespace KartverketApplikasjon.Controllers
                 if (user != null) // If authentication is successful
                 { 
                     
-                    return RedirectToAction("Login");
+                    return RedirectToAction("RegisterSuccess");
                 }
                 ModelState.AddModelError(string.Empty, "Registration failed. Please try again.");
             }
@@ -83,6 +82,9 @@ namespace KartverketApplikasjon.Controllers
             }
             return View(model);
         }
+
+        [HttpPost]
+
 
         public async Task<IActionResult> Logout()
         {

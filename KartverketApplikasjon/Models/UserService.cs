@@ -6,7 +6,7 @@ using System.Text;
 
 namespace KartverketApplikasjon.Services
 {
-    public class UserService
+    public class UserService : IUserService
     {
         private readonly AppDbContext _context;
 
