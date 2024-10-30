@@ -12,7 +12,7 @@ docker-compose up -d
 docker ps
 
 #Koble til MariaDB gjennom docker
-docker exec -it mariadb mysql -u root -p
+docker exec -it mariadb mariadb -u root -p
 
 # Enkle kommandoer for å se om den er koblet til: 
 SHOW DATABASES;
