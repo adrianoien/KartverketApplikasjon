@@ -1,6 +1,9 @@
 For å koble til med MariaDB så må man gjøre følgende: 
 
-Naviger til prosjektmappen
+Gå i en terminal og naviger til prosjektmappen.
+Tips: Kopier pathen ifra direkte hvis man høyreklikker på solutions filen inne i Visual Studio
+
+Skriv: 
 cd path/to/your/project
 Feks: 
 C:\Users\user\source\repos\Kartverket\KartverketApplikasjon\
