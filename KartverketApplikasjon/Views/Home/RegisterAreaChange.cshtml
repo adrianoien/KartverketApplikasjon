@@ -13,7 +13,7 @@
 <form asp-action="RegisterAreaChange" method="post">
     <input type="hidden" id="geoJsonInput" name="geoJson" />
     <div>
-        <label for="description"> Change Description:</label>
+        <label for="description">Change Description:</label>
         <textarea id="description" name="Description" class="form-control"></textarea>
     </div>
     <br />
@@ -23,29 +23,53 @@
 @section Scripts {
     <!-- 1. Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-
     <!-- 2. Leaflet Draw CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
-    <button onclick="locateUser()" class="btn btn-secondary">Refresh Location</button>
+    <!-- 3. Leaflet Search CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-search/dist/leaflet-search.min.css" />
 
+    <button onclick="locateUser()" class="btn btn-secondary">Refresh Location</button>
 
     <!-- 3. Leaflet JS -->
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
     <!-- 4. Leaflet Draw JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+    <!-- 5. Leaflet Search JS -->
+    <script src="https://unpkg.com/leaflet-search/dist/leaflet-search.min.js"></script>
 
     <script>
-        // Initialize the map and set its view over Norway
-        var map = L.map('map').setView([60.472, 8.4689], 6);
-        // Add OpenStreetMap tiles
-        L.tileLayer('https://cache.kartverket.no/v1/wmts/1.0.0/topo/default/webmercator/{z}/{y}/{x}.png', {
-            attribution: 'Map data © Kartverket',
-            maxZoom: 18
+        // Initialize markers layer
+        var markersLayer = new L.LayerGroup();
+
+        // Initialize the map with improved configuration
+        var map = L.map('map', {
+            center: [59.913868, 10.752245],
+            zoom: 13,
+            zoomControl: true,
+            layers: [
+                L.tileLayer('https://cache.kartverket.no/v1/wmts/1.0.0/topo/default/webmercator/{z}/{y}/{x}.png', {
+                    attribution: 'Map data © Kartverket'
+                })
+            ]
+        });
+
+        // Add markers layer to map
+        map.addLayer(markersLayer);
+
+        // Add search control
+        var searchControl = new L.Control.Search({
+            layer: markersLayer,
+            propertyName: 'description',
+            marker: false,
+            moveToLocation: function (latlng, title, map) {
+                map.setView(latlng, 15); // Zoom to searched location
+            }
         }).addTo(map);
-        // Initialize the feature group that will hold the drawn shapes
+
+        // Initialize the feature group for drawn items
         var drawnItems = new L.FeatureGroup();
         map.addLayer(drawnItems);
+
         // Add drawing controls
         var drawControl = new L.Control.Draw({
             draw: {
@@ -60,16 +84,43 @@
             }
         });
         map.addControl(drawControl);
-        // Event handling for when a layer is drawn on the map
+
+        // Your existing event handlers
         map.on(L.Draw.Event.CREATED, function (e) {
             var layer = e.layer;
             drawnItems.addLayer(layer);
-            // Convert drawn layer to GeoJSON
             var geoJsonData = layer.toGeoJSON();
             var geoJsonString = JSON.stringify(geoJsonData);
-            // Set GeoJSON data to the hidden input field in the form
             document.getElementById('geoJsonInput').value = geoJsonString;
+
+            // Add to markers layer for searchability
+            if (e.layerType === 'marker') {
+                var description = prompt("Enter a description for this location:", "");
+                if (description) {
+                    layer.options.description = description;
+                    markersLayer.addLayer(layer);
+                }
+            }
         });
+
+        // Your existing locateUser function
+        function locateUser() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    var userLat = position.coords.latitude;
+                    var userLon = position.coords.longitude;
+                    map.setView([userLat, userLon], 13);
+                    var userMarker = L.marker([userLat, userLon]).addTo(map)
+                        .bindPopup('You are here!')
+                        .openPopup();
+                    fetchKommuneInfo(userLat, userLon);
+                }, function (error) {
+                    console.error("Geolocation failed: " + error.message);
+                });
+            } else {
+                console.error("Geolocation is not supported by this browser.");
+            }
+        };
         // Kartverkets API
         function fetchKommuneInfo(lat, lon) {
             var kartverketAPI = `https://api.kartverket.no/kommuneinfo/v1/punkt?nord=${encodeURIComponent(lat)}&ost=${encodeURIComponent(lon)}&koordsys=4326`;

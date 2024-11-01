@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using KartverketApplikasjon.Services;
 
+
 namespace KartverketApplikasjon.Controllers
 {
     public class AccountController : Controller
@@ -49,6 +50,14 @@ namespace KartverketApplikasjon.Controllers
             return View();
         }
 
+        
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Index", "Home");
+        }
+
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
@@ -83,14 +92,6 @@ namespace KartverketApplikasjon.Controllers
             return View(model);
         }
 
-        [HttpPost]
-
-
-        public async Task<IActionResult> Logout()
-        {
-            // Sign out the user from the authentication system
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("Index", "Home");
-        }
+      
     }
 }

@@ -12,8 +12,8 @@ namespace KartverketApplikasjon.Data
 
         public DbSet<UserData> Users { get; set; }
         public DbSet<GeoChange> GeoChanges { get; set; }
-
-        /*
+        public DbSet<MapCorrections> MapCorrections { get; set; }
+       
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -24,11 +24,15 @@ namespace KartverketApplikasjon.Data
                 entity.HasIndex(e => e.Email).IsUnique();
             });
 
+            modelBuilder.Entity<MapCorrections>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+            });
+
             modelBuilder.Entity<GeoChange>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                // Add any other GeoChange configurations
             });
-        */
         }
     }
+}

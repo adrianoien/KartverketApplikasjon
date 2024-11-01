@@ -3,34 +3,54 @@
     ViewData["Title"] = "Registrer deg";
 }
 
-<h2>@ViewData["Title"]</h2>
-
-<div class="row">
+<div class="row justify-content-center">
     <div class="col-md-4">
-        <form asp-action="Register">
+        <h2>@ViewData["Title"]</h2>
+
+        <form asp-action="Register" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
+
+            <div class="form-group mb-3">
                 <label asp-for="Username" class="control-label"></label>
                 <input asp-for="Username" class="form-control" />
                 <span asp-validation-for="Username" class="text-danger"></span>
             </div>
-            <div class="form-group">
+
+            <div class="form-group mb-3">
                 <label asp-for="Email" class="control-label"></label>
                 <input asp-for="Email" class="form-control" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
-            <div class="form-group">
+
+            <div class="form-group mb-3">
                 <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" />
+                <input asp-for="Password" class="form-control" type="password" />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
-            <div class="form-group">
+
+            <div class="form-group mb-3">
                 <label asp-for="ConfirmPassword" class="control-label"></label>
-                <input asp-for="ConfirmPassword" class="form-control" />
+                <input asp-for="ConfirmPassword" class="form-control" type="password" />
                 <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
             </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Role" class="control-label"></label>
+                <select asp-for="Role" class="form-control" asp-items="Html.GetEnumSelectList<UserRole>()">
+                    <option value="">Velg rolle</option>
+                </select>
+                <span asp-validation-for="Role" class="text-danger"></span>
+            </div>
+
             <div class="form-group">
-                <input type="submit" value="Registrer" class="btn btn-primary" />
+                <button type="submit" class="btn btn-primary">Registrer</button>
+            </div>
+
+            <div class="mt-3">
+                <p>
+                    Har du allerede en konto?
+                    <a asp-action="Login">Logg inn her</a>
+                </p>
             </div>
         </form>
     </div>

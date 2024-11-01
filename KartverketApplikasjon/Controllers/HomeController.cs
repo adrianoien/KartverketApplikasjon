@@ -40,9 +40,41 @@ namespace KartverketApplikasjon.Controllers
         }
 
         [Authorize]
+     
         public IActionResult RegisterAreaChange()
         {
-            return View();
+            // Initialize with a new AreaChange model
+            var model = new AreaChange
+            {
+                Id = "",  // Initialize with empty string since your AreaChange model uses string Id
+                GeoJson = "",
+                Description = ""
+            };
+            return View(model);
+        }
+
+        public async Task<IActionResult> CorrectionsOverview()
+        {
+            try
+            {
+                // Create a sample list for testing (remove this when implementing database)
+                var corrections = new List<MapCorrections>
+        {
+            new MapCorrections
+            {
+                Latitude = "59.913868",
+                Longitude = "10.752245",
+                Description = "Test correction - Oslo"
+            }
+        };
+
+                return View(corrections);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error retrieving corrections: {ex.Message}");
+                return View(new List<MapCorrections>()); // Return empty list on error
+            }
         }
 
         [HttpPost]
@@ -51,7 +83,6 @@ namespace KartverketApplikasjon.Controllers
         {
             try
             {
-                // Insert data using EF
                 if (string.IsNullOrEmpty(geoJson) || string.IsNullOrEmpty(description))
                 {
                     return BadRequest("Invalid data.");
@@ -64,14 +95,15 @@ namespace KartverketApplikasjon.Controllers
                 };
 
                 _context.GeoChanges.Add(newGeoChange);
-                _context.SaveChanges();
-                // Redirect to the overview of changes
+                await _context.SaveChangesAsync();
                 return RedirectToAction("AreaChangeOverview");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error: {ex.Message}, Inner Exception: {ex.InnerException?.Message}");
-                throw;
+                _logger.LogError($"Error: {ex.Message}, Inner Exception: {ex.InnerException?.Message}");
+                // Return to view with error message
+                ModelState.AddModelError("", "Failed to save changes. Please try again.");
+                return View(new AreaChange { GeoJson = geoJson, Description = description });
             }
         }
 
@@ -96,10 +128,7 @@ namespace KartverketApplikasjon.Controllers
             }
         }
 
-        public IActionResult CorrectionsOverview()
-        {
-            return View();
-        }
+       
 
         public IActionResult CorrectMap()
         {

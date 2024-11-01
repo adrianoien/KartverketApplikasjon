@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -45,9 +47,20 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="RegisterAreaChange">RegisterAreaChange</a>
                         </li>
                     </ul>
-                </div>
-                <a href="#" class="btn btn-success" id="navLoginButton">Logg inn →</a>
-            </div>
+                    <div class="navbar-nav">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <span class="nav-item nav-link text-dark">Velkommen @User.Identity.Name!</span>
+                            <form asp-controller="Account" asp-action="Logout" method="post" class="form-inline">
+                                <button type="submit" class="btn btn-outline-primary">Logg ut</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <a class="btn btn-primary me-2" asp-controller="Account" asp-action="Login">Logg inn</a>
+                            <a class="btn btn-outline-primary" asp-controller="Account" asp-action="Register">Registrer</a>
+                        }
+                    </div>
         </nav>
     </header>
 
