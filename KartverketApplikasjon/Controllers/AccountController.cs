@@ -3,7 +3,7 @@ using KartverketApplikasjon.Models;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using KartverketApplikasjon.Services; 
+using KartverketApplikasjon.Services;
 
 namespace KartverketApplikasjon.Controllers
 {
@@ -29,8 +29,8 @@ namespace KartverketApplikasjon.Controllers
             {
                 var user = await _userService.RegisterUserAsync(model);
                 if (user != null) // If authentication is successful
-                { 
-                    
+                {
+
                     return RedirectToAction("RegisterSuccess");
                 }
                 ModelState.AddModelError(string.Empty, "Registration failed. Please try again.");
@@ -56,7 +56,7 @@ namespace KartverketApplikasjon.Controllers
             {
                 var user = await _userService.AuthenticateAsync(model.Email, model.Password);
                 if (user != null)
-                {      
+                {
                     // Create user claims (for authentication)
                     var claims = new List<Claim>
                     {

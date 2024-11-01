@@ -1,3 +1,4 @@
+/*
 using KartverketApplikasjon.Data;
 using KartverketApplikasjon.Models;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +16,7 @@ namespace KartverketApplikasjon.Services
             _context = context;
         }
         // Takes input from a RegisterViewModel, creates a new UserData object, and saving it to the database
-        public async Task<UserData> RegisterUserAsync(RegisterViewModel model)
+       public async Task<UserData> RegisterUserAsync(RegisterViewModel model)
         {
             var user = new UserData
             {
@@ -56,3 +57,4 @@ namespace KartverketApplikasjon.Services
         }
     }
 }
+*/
