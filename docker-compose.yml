@@ -4,7 +4,7 @@ services:
     image: mariadb:latest
     container_name: mariadb
     environment:
-      MYSQL_ROOT_PASSWORD: 12345678
+      MYSQL_ROOT_PASSWORD: 12345678    
       MYSQL_DATABASE: geochangesdb
       MYSQL_USER: root
       MYSQL_PASSWORD: 12345678
@@ -15,8 +15,8 @@ services:
     networks:
       - backend
 
-  KartverketApplikasjon:
-    image: ${DOCKER_REGISTRY-}KartverketApplikasjon
+  kartverketapplikasjon:   
+    image: ${DOCKER_REGISTRY-}kartverketapplikasjon
     build:
       context: .
       dockerfile: KartverketApplikasjon/Dockerfile
