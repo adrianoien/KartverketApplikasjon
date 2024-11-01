@@ -1,10 +1,10 @@
 ﻿@model AreaChange
 
 @{
-    ViewData["Title"] = "Register a change";
+    ViewData["Title"] = "Registrer Områdeendring";
 }
 
-<h2>Register a change</h2>
+<h2>Registrer endring</h2>
 
 <!-- Map container with defined height -->
 <div id="map" style="height: 400px;"></div>
@@ -13,11 +13,11 @@
 <form asp-action="RegisterAreaChange" method="post">
     <input type="hidden" id="geoJsonInput" name="geoJson" />
     <div>
-        <label for="description"> Change Description:</label>
+        <label for="description"> Endre beskrivelse:</label>
         <textarea id="description" name="Description" class="form-control"></textarea>
     </div>
     <br />
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" class="btn btn-primary">Send Inn</button>
 </form>
 
 @section Scripts {

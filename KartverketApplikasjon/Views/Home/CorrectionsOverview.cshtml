@@ -1,13 +1,13 @@
 @model List<KartverketApplikasjon.Models.MapCorrections>
 
-<h2>Overview of correction</h2>
+<h2>Oversikt over korreksjoner</h2>
 
 <div>
     @foreach (var position in Model)
     {
-        <p><strong>Latitude:</strong>@position.Latitude</p>
-        <p><strong>Longitude:</strong>@position.Longitude</p>
-        <p><strong>Description:</strong>@position.Description</p>
+        <p><strong>Breddegrad:</strong>@position.Latitude</p>
+        <p><strong>Lengdegrad:</strong>@position.Longitude</p>
+        <p><strong>Beskrivelse:</strong>@position.Description</p>
     }
 </div>
 <div id="map" style="height: 500px;"></div>
