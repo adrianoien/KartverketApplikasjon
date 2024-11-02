@@ -60,6 +60,15 @@
                             <a class="btn btn-primary me-2" asp-controller="Account" asp-action="Login">Logg inn</a>
                             <a class="btn btn-outline-primary" asp-controller="Account" asp-action="Register">Registrer</a>
                         }
+
+                        @if (User.IsInRole("Saksbehandler"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="CorrectionManagement" asp-action="Index">
+                                    Manage Corrections
+                                </a>
+                            </li>
+                        }
                     </div>
         </nav>
     </header>
