@@ -25,7 +25,7 @@
     <script>
         // initialize the map on the "map" div with a given center and zoom
         var map = L.map('map', {
-            center: [51.505, -0.09],
+            center: [58.171263, 7.8573505],
             zoom: 13
         });
         // Add OpenStreetMap tile layer
@@ -33,7 +33,7 @@
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        // Funksjon for å håndtere geolokalisering
+        // Funksjon for ï¿½ hï¿½ndtere geolokalisering
         function locateUser() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function (position) {
