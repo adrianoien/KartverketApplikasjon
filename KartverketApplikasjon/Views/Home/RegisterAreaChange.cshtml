@@ -1,10 +1,10 @@
-﻿@model AreaChange
+@model AreaChange
 
 @{
-    ViewData["Title"] = "Register a change";
+    ViewData["Title"] = "Registrer Områdeendring";
 }
 
-<h2>Register a change</h2>
+<h2>Registrer endring</h2>
 
 <!-- Map container with defined height -->
 <div id="map" style="height: 400px;"></div>
@@ -17,7 +17,7 @@
         <textarea id="description" name="Description" class="form-control"></textarea>
     </div>
     <br />
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" class="btn btn-primary">Send Inn</button>
 </form>
 
 @section Scripts {
@@ -103,56 +103,32 @@
             }
         });
 
-        // Your existing locateUser function
-        function locateUser() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function (position) {
-                    var userLat = position.coords.latitude;
-                    var userLon = position.coords.longitude;
-                    map.setView([userLat, userLon], 13);
-                    var userMarker = L.marker([userLat, userLon]).addTo(map)
-                        .bindPopup('You are here!')
-                        .openPopup();
-                    fetchKommuneInfo(userLat, userLon);
-                }, function (error) {
-                    console.error("Geolocation failed: " + error.message);
-                });
-            } else {
-                console.error("Geolocation is not supported by this browser.");
-            }
-        };
-        // Kartverkets API
         function fetchKommuneInfo(lat, lon) {
             var kartverketAPI = `https://api.kartverket.no/kommuneinfo/v1/punkt?nord=${encodeURIComponent(lat)}&ost=${encodeURIComponent(lon)}&koordsys=4326`;
-            // Fetch the data from the API
+            
             fetch(kartverketAPI, {
                 method: 'GET',
                 headers: {
-                    'Accept': 'application/json',  // Ensure we're requesting JSON data
+                    'Accept': 'application/json',
                 }
             })
                 .then(response => {
                     if (!response.ok) {
-                        // For debugging purposes, remove when functionality is properly implemented
                         console.error("Network error: " + response.status + " - " + response.statusText);
                         throw new Error('Network response was not ok: ' + response.statusText);
                     }
                     return response.json();
                 })
                 .then(data => {
-                    
                     console.log("Kartverket API response:", data);
-                    // Check if Kommune data is available
                     if (data.kommunenavn) {
                         var kommuneName = data.kommunenavn;
                         var kommuneNumber = data.kommunenummer;
-                        // Display Kommune info in a Leaflet popup
                         L.popup()
                             .setLatLng([lat, lon])
                             .setContent(`Kommune: ${kommuneName} (Kommune Number: ${kommuneNumber})`)
                             .openOn(map);
                     } else {
-                        // If no Kommune data is found, show an error message
                         L.popup()
                             .setLatLng([lat, lon])
                             .setContent("Kommune information not found for this location")
@@ -160,26 +136,23 @@
                     }
                 })
                 .catch(error => {
-                    // Log the error to the console
                     console.error("Error fetching Kommune data:", error);
                     var stedsnavnAPI = `https://api.kartverket.no/stedsnavn/v1/navn?sok=Oslo&koordsys=4326`;
                     fetch(stedsnavnAPI)
                         .then(response => response.json())
                         .then(data => {
                             console.log("Place names data:", data);
-                            // You can handle the place names data and show it on the map or log it
                         })
                         .catch(error => console.error("Error fetching place names:", error));
                 });
         }
+
         function locateUser() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function (position) {
                     var userLat = position.coords.latitude;
                     var userLon = position.coords.longitude;
-                    // Center the map on the users location
                     map.setView([userLat, userLon], 13);
-                    // Adds a marker to the location of the user
                     var userMarker = L.marker([userLat, userLon]).addTo(map)
                         .bindPopup('You are here!')
                         .openPopup();
@@ -191,13 +164,14 @@
                 console.error("Geolocation is not supported by this browser.");
             }
         }
+
         // Handle map click event for reverse geocoding
         map.on('click', function (e) {
             var lat = e.latlng.lat;
             var lon = e.latlng.lng;
-            // Fetch Kommune info for the clicked location
             fetchKommuneInfo(lat, lon);
         });
+
         // Runs the geolocation on load
         window.onload = locateUser;
     </script>
