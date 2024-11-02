@@ -1,0 +1,58 @@
+﻿@model DashboardViewModel
+
+<div class="container">
+    <h2>Corrections Management Dashboard</h2>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Pending Reviews</h5>
+                    <h2>@Model.PendingCount</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Approved This Week</h5>
+                    <h2>@Model.ApprovedThisWeek</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Rejected This Week</h5>
+                    <h2>@Model.RejectedThisWeek</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Recent Submissions</h5>
+                    <div id="map" style="height: 400px;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Quick Actions</h5>
+                    <div class="list-group">
+                        <a href="@Url.Action("Index", new { status = "Pending" })" class="list-group-item list-group-item-action">
+                            View Pending Reviews
+                        </a>
+                        <a href="@Url.Action("Index", new { status = "All" })" class="list-group-item list-group-item-action">
+                            View All Submissions
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

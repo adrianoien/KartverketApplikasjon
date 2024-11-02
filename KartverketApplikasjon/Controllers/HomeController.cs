@@ -77,6 +77,7 @@ namespace KartverketApplikasjon.Controllers
             }
         }
 
+        
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> RegisterAreaChange(string geoJson, string description)
@@ -88,22 +89,28 @@ namespace KartverketApplikasjon.Controllers
                     return BadRequest("Invalid data.");
                 }
 
-                var newGeoChange = new GeoChange
+                
+                var newCorrection = new MapCorrections
                 {
-                    GeoJson = geoJson,
-                    Description = description
+                    Description = description,
+                    Latitude = geoJson.Split(',')[0],  
+                    Longitude = geoJson.Split(',')[1],
+                    Status = CorrectionStatus.Pending,
+                    SubmittedBy = User.Identity.Name,
+                    SubmittedDate = DateTime.UtcNow
                 };
 
-                _context.GeoChanges.Add(newGeoChange);
+                _context.MapCorrections.Add(newCorrection);
                 await _context.SaveChangesAsync();
-                return RedirectToAction("AreaChangeOverview");
+
+                TempData["Success"] = "Din innleding er sendt inn for behandling.";
+                return RedirectToAction("Index", "Home");
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex.Message}, Inner Exception: {ex.InnerException?.Message}");
-                // Return to view with error message
-                ModelState.AddModelError("", "Failed to save changes. Please try again.");
-                return View(new AreaChange { GeoJson = geoJson, Description = description });
+                ModelState.AddModelError("", "Det oppstod en file under lagring. Prøv igjen.");
+                return View();
             }
         }
 
@@ -111,6 +118,17 @@ namespace KartverketApplikasjon.Controllers
         {
             var changes = await _context.GeoChanges.ToListAsync();
             return View(changes);
+        }
+
+        [Authorize]
+        public async Task<IActionResult> MySubmissions()
+        {
+            var userSubmissions = await _context.MapCorrections
+                .Where(c => c.SubmittedBy == User.Identity.Name)
+                .OrderByDescending(c => c.SubmittedDate)
+                .ToListAsync();
+
+            return View(userSubmissions);
         }
 
         [HttpGet]

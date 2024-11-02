@@ -86,4 +86,27 @@ public class CorrectionManagementController : Controller
             return View(correction);
         }
     }
+    public async Task<IActionResult> Dashboard()
+    {
+        var dashboard = new DashboardViewModel
+        {
+            PendingCount = await _context.MapCorrections
+                .CountAsync(c => c.Status == CorrectionStatus.Pending),
+
+            ApprovedThisWeek = await _context.MapCorrections
+                .CountAsync(c => c.Status == CorrectionStatus.Approved
+                    && c.ReviewedDate >= DateTime.UtcNow.AddDays(-7)),
+
+            RejectedThisWeek = await _context.MapCorrections
+                .CountAsync(c => c.Status == CorrectionStatus.Rejected
+                    && c.ReviewedDate >= DateTime.UtcNow.AddDays(-7)),
+
+            RecentSubmissions = await _context.MapCorrections
+                .OrderByDescending(c => c.SubmittedDate)
+                .Take(10)
+                .ToListAsync()
+        };
+
+        return View(dashboard);
+    }
 }

@@ -10,7 +10,7 @@ namespace KartverketApplikasjon.Controllers
 {
     public class AccountController : Controller
     {
-        // Injects UserService to handle user-related logic (registration, authentication, etc.)
+        // Injects UserService to handle user logic
         private readonly IUserService _userService;
 
         public AccountController(IUserService userService)

@@ -69,6 +69,46 @@
                                 </a>
                             </li>
                         }
+                        <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow">
+                            <div class="container">
+                                <!-- Existing nav items -->
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link text-dark" asp-controller="Home" asp-action="RegisterAreaChange">
+                                            Report Map Change
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link text-dark" asp-controller="Home" asp-action="MySubmissions">
+                                            My Submissions
+                                        </a>
+                                    </li>
+
+                                    @if (User.IsInRole("Saksbehandler"))
+                                    {
+                                        <li class="nav-item dropdown">
+                                            <a class="nav-link dropdown-toggle" href="#" id="manageDropdown" role="button"
+                                               data-bs-toggle="dropdown" aria-expanded="false">
+                                                Manage Corrections
+                                            </a>
+                                            <ul class="dropdown-menu" aria-labelledby="manageDropdown">
+                                                <li>
+                                                    <a class="dropdown-item" asp-controller="CorrectionManagement" asp-action="Dashboard">
+                                                        Dashboard
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" asp-controller="CorrectionManagement" asp-action="Index">
+                                                        Review Queue
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    }
+                                }
+                            </div>
+                        </nav>
                     </div>
         </nav>
     </header>
