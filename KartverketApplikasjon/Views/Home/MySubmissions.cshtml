@@ -1,26 +1,16 @@
-﻿@model IEnumerable<MapCorrections>
+﻿@model KartverketApplikasjon.Models.UnifiedMapViewModel
 
 <div class="container">
-    <h2>My Map Change Submissions</h2>
+    <h2>My Submissions</h2>
 
     <div class="row mb-4">
         <div class="col">
-            <div class="btn-group">
-                <a href="#" class="btn btn-outline-primary active">All</a>
-                <a href="#" class="btn btn-outline-warning">Pending</a>
-                <a href="#" class="btn btn-outline-success">Approved</a>
-                <a href="#" class="btn btn-outline-danger">Rejected</a>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        @foreach (var submission in Model)
-        {
-            <div class="col-md-6 mb-4">
-                <div class="card">
+            <h3>Point Corrections</h3>
+            @foreach (var submission in Model.Positions)
+            {
+                <div class="card mb-3">
                     <div class="card-body">
-                        <h5 class="card-title">Submission from @submission.SubmittedDate.ToString("d")</h5>
+                        <h5 class="card-title">Point Correction</h5>
                         <div class="mb-2">
                             <span class="badge bg-@(submission.Status switch {
                                 CorrectionStatus.Pending => "warning",
@@ -31,7 +21,8 @@
                         </div>
                         <p class="card-text">@submission.Description</p>
                         <p class="card-text"><small>Location: [@submission.Latitude, @submission.Longitude]</small></p>
-                        @if (submission.ReviewComment != null)
+                        <p class="card-text"><small class="text-muted">Submitted: @submission.SubmittedDate.ToString("g")</small></p>
+                        @if (!string.IsNullOrEmpty(submission.ReviewComment))
                         {
                             <div class="alert alert-info">
                                 <strong>Reviewer Comment:</strong><br />
@@ -40,7 +31,29 @@
                         }
                     </div>
                 </div>
-            </div>
-        }
+            }
+        </div>
+
+        <div class="col">
+            <h3>Area Changes</h3>
+            @foreach (var change in Model.Changes)
+            {
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Area Change</h5>
+                        <div class="mb-2">
+                            <span class="badge bg-@(change.Status switch {
+                                CorrectionStatus.Pending => "warning",
+                                CorrectionStatus.Approved => "success",
+                                CorrectionStatus.Rejected => "danger",
+                                _ => "secondary"
+                            })">@change.Status</span>
+                        </div>
+                        <p class="card-text">@change.Description</p>
+                        <p class="card-text"><small class="text-muted">Submitted: @change.SubmittedDate.ToString("g")</small></p>
+                    </div>
+                </div>
+            }
+        </div>
     </div>
 </div>
