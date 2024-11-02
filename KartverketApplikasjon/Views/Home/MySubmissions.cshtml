@@ -1,0 +1,46 @@
+﻿@model IEnumerable<MapCorrections>
+
+<div class="container">
+    <h2>My Map Change Submissions</h2>
+
+    <div class="row mb-4">
+        <div class="col">
+            <div class="btn-group">
+                <a href="#" class="btn btn-outline-primary active">All</a>
+                <a href="#" class="btn btn-outline-warning">Pending</a>
+                <a href="#" class="btn btn-outline-success">Approved</a>
+                <a href="#" class="btn btn-outline-danger">Rejected</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        @foreach (var submission in Model)
+        {
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Submission from @submission.SubmittedDate.ToString("d")</h5>
+                        <div class="mb-2">
+                            <span class="badge bg-@(submission.Status switch {
+                                CorrectionStatus.Pending => "warning",
+                                CorrectionStatus.Approved => "success",
+                                CorrectionStatus.Rejected => "danger",
+                                _ => "secondary"
+                            })">@submission.Status</span>
+                        </div>
+                        <p class="card-text">@submission.Description</p>
+                        <p class="card-text"><small>Location: [@submission.Latitude, @submission.Longitude]</small></p>
+                        @if (submission.ReviewComment != null)
+                        {
+                            <div class="alert alert-info">
+                                <strong>Reviewer Comment:</strong><br />
+                                @submission.ReviewComment
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

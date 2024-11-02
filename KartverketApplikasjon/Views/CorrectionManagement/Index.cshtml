@@ -1,0 +1,74 @@
+﻿@using KartverketApplikasjon.Models
+@model IEnumerable<MapCorrections>
+@{
+    ViewData["Title"] = "Correction Management";
+}
+
+<div class="container mt-4">
+    <h2>Map Corrections Management</h2>
+
+    <div class="mb-4">
+        <div class="btn-group" role="group">
+            <a asp-action="Index" asp-route-status="Pending"
+               class="btn @(ViewBag.CurrentFilter == "Pending" ? "btn-primary" : "btn-outline-primary")">
+                Pending
+            </a>
+            <a asp-action="Index" asp-route-status="Approved"
+               class="btn @(ViewBag.CurrentFilter == "Approved" ? "btn-primary" : "btn-outline-primary")">
+                Approved
+            </a>
+            <a asp-action="Index" asp-route-status="Rejected"
+               class="btn @(ViewBag.CurrentFilter == "Rejected" ? "btn-primary" : "btn-outline-primary")">
+                Rejected
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Location</th>
+                    <th>Submitted By</th>
+                    <th>Submitted Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Description</td>
+                        <td>[@item.Latitude, @item.Longitude]</td>
+                        <td>@item.SubmittedBy</td>
+                        <td>@item.SubmittedDate.ToString("g")</td>
+                        <td>
+                            <span class="badge bg-@(item.Status switch {
+                                CorrectionStatus.Pending => "warning",
+                                CorrectionStatus.Approved => "success",
+                                CorrectionStatus.Rejected => "danger",
+                                _ => "secondary"
+                            })">
+                                @item.Status
+                            </span>
+                        </td>
+                        <td>
+                            <a asp-action="Review" asp-route-id="@item.Id"
+                               class="btn btn-sm btn-primary">Review</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

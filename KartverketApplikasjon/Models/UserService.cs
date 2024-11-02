@@ -1,3 +1,4 @@
+
 using KartverketApplikasjon.Data;
 using KartverketApplikasjon.Models;
 using Microsoft.EntityFrameworkCore;
@@ -8,9 +9,9 @@ namespace KartverketApplikasjon.Services
 {
     public class UserService : IUserService
     {
-        private readonly AppDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public UserService(AppDbContext context)
+        public UserService(ApplicationDbContext context)
         {
             _context = context;
         }

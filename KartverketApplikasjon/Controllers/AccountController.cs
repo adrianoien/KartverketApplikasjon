@@ -3,13 +3,14 @@ using KartverketApplikasjon.Models;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using KartverketApplikasjon.Services; 
+using KartverketApplikasjon.Services;
+
 
 namespace KartverketApplikasjon.Controllers
 {
     public class AccountController : Controller
     {
-        // Injects UserService to handle user-related logic (registration, authentication, etc.)
+        // Injects UserService to handle user logic
         private readonly IUserService _userService;
 
         public AccountController(IUserService userService)
@@ -29,8 +30,8 @@ namespace KartverketApplikasjon.Controllers
             {
                 var user = await _userService.RegisterUserAsync(model);
                 if (user != null) // If authentication is successful
-                { 
-                    
+                {
+
                     return RedirectToAction("RegisterSuccess");
                 }
                 ModelState.AddModelError(string.Empty, "Registration failed. Please try again.");
@@ -49,6 +50,14 @@ namespace KartverketApplikasjon.Controllers
             return View();
         }
 
+        
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Index", "Home");
+        }
+
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
@@ -56,7 +65,7 @@ namespace KartverketApplikasjon.Controllers
             {
                 var user = await _userService.AuthenticateAsync(model.Email, model.Password);
                 if (user != null)
-                {      
+                {
                     // Create user claims (for authentication)
                     var claims = new List<Claim>
                     {
@@ -83,14 +92,6 @@ namespace KartverketApplikasjon.Controllers
             return View(model);
         }
 
-        [HttpPost]
-
-
-        public async Task<IActionResult> Logout()
-        {
-            // Sign out the user from the authentication system
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("Index", "Home");
-        }
+      
     }
 }

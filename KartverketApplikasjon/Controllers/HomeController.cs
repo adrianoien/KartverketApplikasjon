@@ -1,26 +1,35 @@
-using System;
-using System.Diagnostics;
-using System.Collections.Generic;
-using KartverketApplikasjon.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
+using KartverketApplikasjon.Models;
+
+using Microsoft.AspNetCore.Authorization;
+using System.Diagnostics;
+using KartverketApplikasjon.Data;
 
 namespace KartverketApplikasjon.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly ApplicationDbContext _context;
 
-        // Define lists for in-memory storage
-        private static List<MapCorrections> positions = new List<MapCorrections>();
-        private static List<AreaChange> changes = new List<AreaChange>();
-
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
         {
             _logger = logger;
+            _context = context;
         }
 
         public IActionResult Index()
+        {
+            return View();
+        }
+
+        public IActionResult Privacy()
+        {
+            return View();
+        }
+
+        public IActionResult UnifiedMapView()
         {
             return View();
         }
@@ -30,85 +39,163 @@ namespace KartverketApplikasjon.Controllers
             return View();
         }
 
-        [HttpGet]
-        public IActionResult CorrectMap()
+        [Authorize]
+     
+        public IActionResult RegisterAreaChange()
         {
-            return View();
-        }
-
-        public IActionResult MapView()
-        {
-            return View();
-        }
-
-        [HttpGet]
-        public IActionResult GetExistingData()
-        {
-            // For now, we'll return both positions and changes
-            var existingData = new { Positions = positions, Changes = changes };
-            return Json(existingData);
-        }
-
-        [HttpPost]
-        public IActionResult SubmitData([FromBody] AreaChange model)
-        {
-            if (ModelState.IsValid)
+            // Initialize with a new AreaChange model
+            var model = new AreaChange
             {
-                model.Id = Guid.NewGuid().ToString();
-                changes.Add(model);
-                return Json(model);
-            }
-            return BadRequest(ModelState);
-        }
-
-        [HttpPost]
-        public IActionResult CorrectMap(MapCorrections model)
-        {
-            if (ModelState.IsValid)
-            {
-                positions.Add(model);
-                return View("CorrectionsOverview", positions);
-            }
+                Id = "",  // Initialize with empty string since your AreaChange model uses string Id
+                GeoJson = "",
+                Description = ""
+            };
             return View(model);
         }
 
-        [HttpGet]
-        public IActionResult CorrectionsOverview()
+        public async Task<IActionResult> CorrectionsOverview()
         {
-            return View(positions);
+            try
+            {
+                // Create a sample list for testing (remove this when implementing database)
+                var corrections = new List<MapCorrections>
+        {
+            new MapCorrections
+            {
+                Latitude = "59.913868",
+                Longitude = "10.752245",
+                Description = "Test correction - Oslo"
+            }
+        };
+
+                return View(corrections);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error retrieving corrections: {ex.Message}");
+                return View(new List<MapCorrections>()); // Return empty list on error
+            }
+        }
+
+        
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> RegisterAreaChange(string geoJson, string description)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(geoJson) || string.IsNullOrEmpty(description))
+                {
+                    return BadRequest("Invalid data.");
+                }
+
+                
+                var newCorrection = new MapCorrections
+                {
+                    Description = description,
+                    Latitude = geoJson.Split(',')[0],  
+                    Longitude = geoJson.Split(',')[1],
+                    Status = CorrectionStatus.Pending,
+                    SubmittedBy = User.Identity.Name,
+                    SubmittedDate = DateTime.UtcNow
+                };
+
+                _context.MapCorrections.Add(newCorrection);
+                await _context.SaveChangesAsync();
+
+                TempData["Success"] = "Din innleding er sendt inn for behandling.";
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error: {ex.Message}, Inner Exception: {ex.InnerException?.Message}");
+                ModelState.AddModelError("", "Det oppstod en file under lagring. Prøv igjen.");
+                return View();
+            }
+        }
+
+        public async Task<IActionResult> AreaChangeOverview()
+        {
+            var changes = await _context.GeoChanges.ToListAsync();
+            return View(changes);
+        }
+
+        [Authorize]
+        public async Task<IActionResult> MySubmissions()
+        {
+            var userSubmissions = await _context.MapCorrections
+                .Where(c => c.SubmittedBy == User.Identity.Name)
+                .OrderByDescending(c => c.SubmittedDate)
+                .ToListAsync();
+
+            return View(userSubmissions);
         }
 
         [HttpGet]
-        public IActionResult RegisterAreaChange()
+        public async Task<IActionResult> GetAllChanges()
+        {
+            try
+            {
+                var changes = await _context.GeoChanges.ToListAsync();
+                return Json(changes);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error retrieving changes: {ex.Message}");
+                return StatusCode(500, "Error retrieving changes");
+            }
+        }
+
+       
+
+        public IActionResult CorrectMap()
         {
             return View();
-        }
-
-        [HttpPost]
-        public IActionResult RegisterAreaChange(string geoJson, string description)
-        {
-            var newChange = new AreaChange
-            {
-                Id = Guid.NewGuid().ToString(),
-                GeoJson = geoJson,
-                Description = description
-            };
-
-            changes.Add(newChange);
-
-            return RedirectToAction("AreaChangeOverview");
-        }
-
-        [HttpGet]
-        public IActionResult AreaChangeOverview()
-        {
-            return View(changes);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        // API endpoints for map corrections
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> SaveCorrection([FromBody] GeoChange correction)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.GeoChanges.Add(correction);
+                    await _context.SaveChangesAsync();
+                    return Json(new { success = true, message = "Correction saved successfully" });
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Error saving correction: {ex.Message}");
+                    return Json(new { success = false, message = "Error saving correction" });
+                }
+            }
+            return Json(new { success = false, message = "Invalid model state" });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetCorrections()
+        {
+            try
+            {
+                var corrections = await _context.GeoChanges
+                    .Where(c => c.GeoJson != null)
+                    .ToListAsync();
+                return Json(corrections);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error retrieving corrections: {ex.Message}");
+                return StatusCode(500, "Error retrieving corrections");
+            }
         }
     }
 }

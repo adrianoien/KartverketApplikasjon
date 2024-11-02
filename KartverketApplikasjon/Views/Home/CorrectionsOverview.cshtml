@@ -1,6 +1,7 @@
-@model List<KartverketApplikasjon.Models.MapCorrections>
+@using KartverketApplikasjon.Models
+@model IEnumerable<MapCorrections>
 
-<h2>Oversikt over korreksjoner</h2>
+<h2>Overview of correction</h2>
 
 <div>
     @foreach (var position in Model)
@@ -9,8 +10,6 @@
         <p><strong>Lengdegrad:</strong>@position.Longitude</p>
         <p><strong>Beskrivelse:</strong>@position.Description</p>
     }
-</div>
-<div id="map" style="height: 500px;"></div>
 
 @section Scripts {
 

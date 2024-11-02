@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -39,9 +41,69 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="RegisterAreaChange">Registrer Områdeendring</a>
                         </li>
                     </ul>
-                </div>
-                <a href="#" class="btn btn-success" id="navLoginButton">Logg inn →</a>
-            </div>
+                    <div class="navbar-nav">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <span class="nav-item nav-link text-dark">Velkommen @User.Identity.Name!</span>
+                            <form asp-controller="Account" asp-action="Logout" method="post" class="form-inline">
+                                <button type="submit" class="btn btn-outline-primary">Logg ut</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <a class="btn btn-primary me-2" asp-controller="Account" asp-action="Login">Logg inn</a>
+                            <a class="btn btn-outline-primary" asp-controller="Account" asp-action="Register">Registrer</a>
+                        }
+
+                        @if (User.IsInRole("Saksbehandler"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="CorrectionManagement" asp-action="Index">
+                                    Manage Corrections
+                                </a>
+                            </li>
+                        }
+                        <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow">
+                            <div class="container">
+                                <!-- Existing nav items -->
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link text-dark" asp-controller="Home" asp-action="RegisterAreaChange">
+                                            Report Map Change
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link text-dark" asp-controller="Home" asp-action="MySubmissions">
+                                            My Submissions
+                                        </a>
+                                    </li>
+
+                                    @if (User.IsInRole("Saksbehandler"))
+                                    {
+                                        <li class="nav-item dropdown">
+                                            <a class="nav-link dropdown-toggle" href="#" id="manageDropdown" role="button"
+                                               data-bs-toggle="dropdown" aria-expanded="false">
+                                                Manage Corrections
+                                            </a>
+                                            <ul class="dropdown-menu" aria-labelledby="manageDropdown">
+                                                <li>
+                                                    <a class="dropdown-item" asp-controller="CorrectionManagement" asp-action="Dashboard">
+                                                        Dashboard
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" asp-controller="CorrectionManagement" asp-action="Index">
+                                                        Review Queue
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    }
+                                }
+                            </div>
+                        </nav>
+                    </div>
         </nav>
     </header>
 
