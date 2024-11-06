@@ -134,5 +134,21 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
             integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    <!-- Simple login check script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var registerAreaLink = document.querySelector('a[href*="RegisterAreaChange"]');
+            if (registerAreaLink) {
+                registerAreaLink.addEventListener('click', function (e) {
+                    if (!document.querySelector('form[action*="Logout"]')) {  // Check if logout form exists (meaning user is logged in)
+                        e.preventDefault();
+                        alert('Du må logge inn eller registrere deg før du kan sende inn endringer.');
+                        window.location.href = '/Account/Login';
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>
