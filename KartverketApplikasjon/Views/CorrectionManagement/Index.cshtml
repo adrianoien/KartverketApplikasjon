@@ -1,25 +1,26 @@
-﻿@using KartverketApplikasjon.Models
-@model IEnumerable<MapCorrections>
+﻿@using KartverketApplikasjon.Data
+@using KartverketApplikasjon.Models
+@model (IEnumerable<MapCorrections> MapCorrections, IEnumerable<GeoChange> AreaChanges)
 @{
     ViewData["Title"] = "Correction Management";
 }
 
 <div class="container mt-4">
-    <h2>Map Corrections Management</h2>
+    <h2>Changes Management</h2>
 
     <div class="mb-4">
         <div class="btn-group" role="group">
             <a asp-action="Index" asp-route-status="Pending"
-               class="btn @(ViewBag.CurrentFilter == "Pending" ? "btn-primary" : "btn-outline-primary")">
-                Pending
+               class="btn @(ViewBag.CurrentFilter == "Pending" ? "btn-success" : "btn-outline-success")">
+                PENDING
             </a>
             <a asp-action="Index" asp-route-status="Approved"
-               class="btn @(ViewBag.CurrentFilter == "Approved" ? "btn-primary" : "btn-outline-primary")">
-                Approved
+               class="btn @(ViewBag.CurrentFilter == "Approved" ? "btn-success" : "btn-outline-success")">
+                APPROVED
             </a>
             <a asp-action="Index" asp-route-status="Rejected"
-               class="btn @(ViewBag.CurrentFilter == "Rejected" ? "btn-primary" : "btn-outline-primary")">
-                Rejected
+               class="btn @(ViewBag.CurrentFilter == "Rejected" ? "btn-success" : "btn-outline-success")">
+                REJECTED
             </a>
         </div>
     </div>
@@ -32,6 +33,7 @@
         </div>
     }
 
+    <h3 class="mt-4 mb-3">Map Corrections</h3>
     <div class="table-responsive">
         <table class="table table-striped">
             <thead>
@@ -45,27 +47,84 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Model)
+                @if (Model.MapCorrections.Any())
+                {
+                    @foreach (var item in Model.MapCorrections)
+                    {
+                        <tr>
+                            <td>@item.Description</td>
+                            <td>[@item.Latitude, @item.Longitude]</td>
+                            <td>@item.SubmittedBy</td>
+                            <td>@item.SubmittedDate.ToString("g")</td>
+                            <td>
+                                <span class="badge bg-@(item.Status switch {
+                                    CorrectionStatus.Pending => "warning",
+                                    CorrectionStatus.Approved => "success",
+                                    CorrectionStatus.Rejected => "danger",
+                                    _ => "secondary"
+                                })">
+                                    @item.Status
+                                </span>
+                            </td>
+                            <td>
+                                <a asp-action="Review" asp-route-id="@item.Id" asp-route-type="map"
+                                   class="btn btn-sm btn-primary">Review</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
                 {
                     <tr>
-                        <td>@item.Description</td>
-                        <td>[@item.Latitude, @item.Longitude]</td>
-                        <td>@item.SubmittedBy</td>
-                        <td>@item.SubmittedDate.ToString("g")</td>
-                        <td>
-                            <span class="badge bg-@(item.Status switch {
-                                CorrectionStatus.Pending => "warning",
-                                CorrectionStatus.Approved => "success",
-                                CorrectionStatus.Rejected => "danger",
-                                _ => "secondary"
-                            })">
-                                @item.Status
-                            </span>
-                        </td>
-                        <td>
-                            <a asp-action="Review" asp-route-id="@item.Id"
-                               class="btn btn-sm btn-primary">Review</a>
-                        </td>
+                        <td colspan="6" class="text-center">No map corrections found</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <h3 class="mt-5 mb-3">Area Changes</h3>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Submitted By</th>
+                    <th>Submitted Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.AreaChanges.Any())
+                {
+                    @foreach (var item in Model.AreaChanges)
+                    {
+                        <tr>
+                            <td>@item.Description</td>
+                            <td>@item.SubmittedBy</td>
+                            <td>@item.SubmittedDate.ToString("g")</td>
+                            <td>
+                                <span class="badge bg-@(item.Status switch {
+                                    CorrectionStatus.Pending => "warning",
+                                    CorrectionStatus.Approved => "success",
+                                    CorrectionStatus.Rejected => "danger",
+                                    _ => "secondary"
+                                })">
+                                    @item.Status
+                                </span>
+                            </td>
+                            <td>
+                                <a asp-action="Review" asp-route-id="@item.Id" asp-route-type="area"
+                                   class="btn btn-sm btn-primary">Review</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5" class="text-center">No area changes found</td>
                     </tr>
                 }
             </tbody>
