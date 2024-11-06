@@ -98,34 +98,34 @@
         {
             <text>
                     (function () {
-                        // Default coordinates for Norway if none provided
+                        // Standardkoordinater for Norge dersom ingen er angitt
                         var defaultLat = 62.0;
                     var defaultLng = 10.0;
 
-                    // Get coordinates from model
+                    // Hent koordinater fra modellen
                     var lat = '@Model.Latitude';
                     var lng = '@Model.Longitude';
 
-                    console.log('Raw coordinates:', {lat, lng});
+                    console.log('Råkoordinater:', {lat, lng});
 
-                    // Parse coordinates, use defaults if invalid
+                    // Parse koordinater, bruk standard hvis ugyldig
                     lat = !isNaN(parseFloat(lat)) ? parseFloat(lat) : defaultLat;
                     lng = !isNaN(parseFloat(lng)) ? parseFloat(lng) : defaultLng;
 
-                    console.log('Parsed coordinates:', {lat, lng});
+                    console.log('Parsed koordinater:', {lat, lng});
 
                     map.whenReady(function () {
-                        console.log('Setting map view to:', { lat, lng });
+                        console.log('Setter kartvisning til:', { lat, lng });
                     map.setView([lat, lng], lat === defaultLat ? 4 : 15);
 
                     if (lat !== defaultLat || lng !== defaultLng) {
                         L.marker([lat, lng])
                             .addTo(map)
-                            .bindPopup('@Html.Raw(Json.Serialize(Model.Description))')
+                            .bindPopup(@Html.Raw(Json.Serialize(Model.Description)))
                             .openPopup();
                             }
 
-                    // Only fetch municipality if we're not using default coordinates
+                    // Kun hent kommuneinformasjon hvis vi ikke bruker standardkoordinater
                     if (lat !== defaultLat && lng !== defaultLng) {
                                 const params = new URLSearchParams({
                         nord: lat.toString(),
@@ -133,33 +133,34 @@
                     koordsys: '4326'
                                 });
 
-                    const apiUrl = `https://api.kartverket.no/kommuneinfo/v1/punkt?${params}`;
-                    console.log('Fetching municipality data from:', apiUrl);
+                    const apiUrl = `https://api.kartverket.no/kommuneinfo/v1/punkt?${params.toString()}`;
+                    console.log('Henter kommuneinformasjon fra:', apiUrl);
 
                     fetch(apiUrl)
                                     .then(response => {
-                        console.log('Municipality API response:', response.status);
+                        console.log('Kommune API-respons:', response.status);
                     if (!response.ok) {
-                                            throw new Error(`HTTP error! status: ${response.status}`);
+                                            throw new Error(`HTTP-feil! status: ${response.status}`);
                                         }
                     return response.json();
                                     })
                                     .then(data => {
-                        console.log('Municipality data:', data);
+                        console.log('Kommuneinformasjon:', data);
                     document.getElementById('municipality').textContent =
-                    data && data.kommunenavn ? data.kommunenavn : 'Not found';
+                    data && data.kommunenavn ? data.kommunenavn : 'Ikke funnet';
                                     })
                     .catch(function (error) {
-                        console.error('Error fetching municipality:', error);
+                        console.error('Feil ved henting av kommune:', error);
                     document.getElementById('municipality').textContent =
-                    'Could not determine municipality';
+                    'Kunne ikke bestemme kommune';
                                     });
                             } else {
-                        document.getElementById('municipality').textContent = 'No location specified';
+                        document.getElementById('municipality').textContent = 'Ingen lokasjon spesifisert';
                             }
                         });
-                    })(); // Close IIFE
+                    })(); // Lukker IIFE
             </text>
         }
+
     </script>
 }
