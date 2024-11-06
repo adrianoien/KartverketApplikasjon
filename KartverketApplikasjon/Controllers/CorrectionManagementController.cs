@@ -91,7 +91,7 @@ public class CorrectionManagementController : Controller
             var geoJson = areaChange.GeoJson;
             if (!string.IsNullOrEmpty(geoJson))
             {
-                // Remove any extra quotes if they exist
+                
                 geoJson = geoJson.Trim('"');
                 // Ensure it's valid JSON
                 try
