@@ -138,13 +138,13 @@
     <!-- Simple login check script -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            var registerAreaLink = document.querySelector('a[href*="RegisterAreaChange"]');
+            var registerAreaLink = document.querySelector('a[href*="Account/Login"][href*="AreaChange"]');
             if (registerAreaLink) {
                 registerAreaLink.addEventListener('click', function (e) {
-                    if (!document.querySelector('form[action*="Logout"]')) {  // Check if logout form exists (meaning user is logged in)
+                    if (!document.querySelector('form[action*="Logout"]')) {
                         e.preventDefault();
                         alert('Du må logge inn eller registrere deg før du kan sende inn endringer.');
-                        window.location.href = '/Account/Login';
+                        window.location.href = this.href; // This will use the login URL with the return URL parameter
                     }
                 });
             }
