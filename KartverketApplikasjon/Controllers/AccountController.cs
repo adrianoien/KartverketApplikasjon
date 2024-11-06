@@ -26,15 +26,26 @@ namespace KartverketApplikasjon.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            if (ModelState.IsValid) // Validates login input
+            if (ModelState.IsValid)
             {
                 var user = await _userService.RegisterUserAsync(model);
-                if (user != null) // If authentication is successful
+                if (user != null)
                 {
+                    // Create claims and sign in right after registration
+                    var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.Email),
+                new Claim(ClaimTypes.Role, user.Role.ToString())
+            };
 
-                    return RedirectToAction("RegisterSuccess");
+                    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    await HttpContext.SignInAsync(
+                        CookieAuthenticationDefaults.AuthenticationScheme,
+                        new ClaimsPrincipal(claimsIdentity));
+
+                    return RedirectToAction("Index", "Home");
                 }
-                ModelState.AddModelError(string.Empty, "Registration failed. Please try again.");
+                ModelState.AddModelError(string.Empty, "Registration failed.");
             }
             return View(model);
         }

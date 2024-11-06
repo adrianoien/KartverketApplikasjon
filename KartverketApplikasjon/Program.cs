@@ -62,4 +62,9 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+app.MapControllerRoute(
+    name: "areaChange",
+    pattern: "area-change/{action=Register}/{id?}",
+    defaults: new { controller = "AreaChange" });
+
 app.Run();

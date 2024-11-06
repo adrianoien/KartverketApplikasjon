@@ -1,0 +1,65 @@
+﻿.navbar {
+    padding: 0.5rem 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar-brand img {
+    height: 40px;
+}
+
+.nav-divider {
+    width: 1px;
+    background-color: #dee2e6;
+    height: 42px;
+    margin: 0 1rem;
+    opacity: 1; /* Make divider more visible */
+}
+
+.navbar .nav-link {
+    font-size: 0.9rem;
+    color: #495057 !important;
+    padding: 0.5rem 1rem;
+    position: relative;
+}
+
+    .navbar .nav-link:hover {
+        color: #0066cc !important;
+    }
+
+.nav-user-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.welcome-text {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-bottom: 0;
+}
+
+.logout-btn {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+}
+
+
+.navbar .nav-link {
+    transition: color 0.2s ease-in-out;
+}
+
+
+.dropdown-menu {
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.dropdown-item {
+    padding: 0.5rem 1.5rem;
+    font-size: 0.9rem;
+}
+
+    .dropdown-item:hover {
+        background-color: #f8f9fa;
+        color: #0066cc;
+    }

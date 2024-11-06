@@ -4,6 +4,7 @@ using KartverketApplikasjon.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KartverketApplikasjon.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241102132722_GeoChangesAndModels")]
+    partial class GeoChangesAndModels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,15 +40,6 @@ namespace KartverketApplikasjon.Migrations
                     b.Property<string>("GeoJson")
                         .IsRequired()
                         .HasColumnType("longtext");
-
-                    b.Property<string>("ReviewComment")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("ReviewedBy")
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime?>("ReviewedDate")
-                        .HasColumnType("datetime(6)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");

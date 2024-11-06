@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;  // For ToListAsync()
 using KartverketApplikasjon.Models;  // For MapCorrections and CorrectionStatus
-
+using KartverketApplikasjon.Controllers;
 
 [Authorize(Roles = "Saksbehandler")]
 public class CorrectionManagementController : Controller
@@ -21,74 +21,127 @@ public class CorrectionManagementController : Controller
     // List all corrections with filtering
     public async Task<IActionResult> Index(string status = "Pending")
     {
-        var correctionsQuery = _context.MapCorrections.AsQueryable();
+        var correctionStatus = Enum.TryParse<CorrectionStatus>(status, out var parsedStatus)
+            ? parsedStatus
+            : CorrectionStatus.Pending;
 
-        // Filter by status if provided
-        if (Enum.TryParse<CorrectionStatus>(status, out var correctionStatus))
+        // Get map corrections
+        var mapCorrectionsQuery = _context.MapCorrections.AsQueryable();
+        if (status != "All")
         {
-            correctionsQuery = correctionsQuery.Where(c => c.Status == correctionStatus);
+            mapCorrectionsQuery = mapCorrectionsQuery.Where(c => c.Status == correctionStatus);
         }
+        IEnumerable<MapCorrections> mapCorrections = await mapCorrectionsQuery
+            .OrderByDescending(c => c.SubmittedDate)
+            .ToListAsync();
 
-        var corrections = await correctionsQuery
+        // Get area changes
+        var areaChangesQuery = _context.GeoChanges.AsQueryable();
+        if (status != "All")
+        {
+            areaChangesQuery = areaChangesQuery.Where(c => c.Status == correctionStatus);
+        }
+        IEnumerable<GeoChange> areaChanges = await areaChangesQuery
             .OrderByDescending(c => c.SubmittedDate)
             .ToListAsync();
 
         ViewBag.CurrentFilter = status;
-        return View(corrections);
+        return View((MapCorrections: mapCorrections, AreaChanges: areaChanges));
     }
 
     // Show detailed view of a correction
-    public async Task<IActionResult> Review(int id)
+    [HttpGet]
+    public async Task<IActionResult> Review(int id, string type)
     {
-        var correction = await _context.MapCorrections.FindAsync(id);
-
-        if (correction == null)
-            return NotFound();
-
-        var viewModel = new CorrectionReviewViewModel
+        if (type == "map")
         {
-            Id = correction.Id,
-            Description = correction.Description,
-            Latitude = correction.Latitude,
-            Longitude = correction.Longitude,
-            Status = correction.Status,
-            ReviewComment = correction.ReviewComment,
-            SubmittedBy = correction.SubmittedBy,
-            SubmittedDate = correction.SubmittedDate
-        };
+            var correction = await _context.MapCorrections.FindAsync(id);
+            if (correction == null)
+                return NotFound();
 
-        return View(viewModel);
+            var viewModel = new CorrectionReviewViewModel
+            {
+                Id = correction.Id,
+                Type = "map",
+                Description = correction.Description,
+                Latitude = correction.Latitude,
+                Longitude = correction.Longitude,
+                Status = correction.Status,
+                ReviewComment = correction.ReviewComment,
+                SubmittedBy = correction.SubmittedBy,
+                SubmittedDate = correction.SubmittedDate
+            };
+
+            return View(viewModel);
+        }
+        else if (type == "area")
+        {
+            var areaChange = await _context.GeoChanges.FindAsync(id);
+            if (areaChange == null)
+                return NotFound();
+
+            var viewModel = new CorrectionReviewViewModel
+            {
+                Id = areaChange.Id,
+                Type = "area",
+                Description = areaChange.Description,
+                GeoJson = areaChange.GeoJson,
+                Status = areaChange.Status,
+                ReviewComment = areaChange.ReviewComment,
+                SubmittedBy = areaChange.SubmittedBy,
+                SubmittedDate = areaChange.SubmittedDate
+            };
+
+            return View(viewModel);
+        }
+
+        return NotFound();
     }
 
     [HttpPost]
-    public async Task<IActionResult> Review(int id, CorrectionStatus status, string reviewComment)
+    public async Task<IActionResult> Review(int id, string type, CorrectionStatus status, string reviewComment)
     {
-        var correction = await _context.MapCorrections.FindAsync(id);
+        if (type == "map")
+        {
+            var correction = await _context.MapCorrections.FindAsync(id);
+            if (correction == null)
+                return NotFound();
 
-        if (correction == null)
-            return NotFound();
+            correction.Status = status;
+            correction.ReviewComment = reviewComment;
+            correction.ReviewedBy = User.Identity.Name;
+            correction.ReviewedDate = DateTime.UtcNow;
+        }
+        else if (type == "area")
+        {
+            var areaChange = await _context.GeoChanges.FindAsync(id);
+            if (areaChange == null)
+                return NotFound();
 
-        correction.Status = status;
-        correction.ReviewComment = reviewComment;
-        correction.ReviewedBy = User.Identity.Name;
-        correction.ReviewedDate = DateTime.UtcNow;
+            areaChange.Status = status;
+            areaChange.ReviewComment = reviewComment;
+            areaChange.ReviewedBy = User.Identity.Name;
+            areaChange.ReviewedDate = DateTime.UtcNow;
+        }
 
         try
         {
             await _context.SaveChangesAsync();
-            TempData["Success"] = $"Correction has been {status.ToString().ToLower()}";
+            TempData["Success"] = $"Change has been {status.ToString().ToLower()}";
             return RedirectToAction(nameof(Index));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error updating correction status");
             ModelState.AddModelError("", "An error occurred while updating the correction.");
-            return View(correction);
+            return View();
         }
     }
+
     public async Task<IActionResult> Dashboard()
     {
-        var dashboard = new DashboardViewModel
+        // Get map corrections counts
+        var mapCorrectionsTask = new
         {
             PendingCount = await _context.MapCorrections
                 .CountAsync(c => c.Status == CorrectionStatus.Pending),
@@ -99,12 +152,42 @@ public class CorrectionManagementController : Controller
 
             RejectedThisWeek = await _context.MapCorrections
                 .CountAsync(c => c.Status == CorrectionStatus.Rejected
+                    && c.ReviewedDate >= DateTime.UtcNow.AddDays(-7))
+        };
+
+        // Get area changes counts
+        var areaChangesTask = new
+        {
+            PendingCount = await _context.GeoChanges
+                .CountAsync(c => c.Status == CorrectionStatus.Pending),
+
+            ApprovedThisWeek = await _context.GeoChanges
+                .CountAsync(c => c.Status == CorrectionStatus.Approved
                     && c.ReviewedDate >= DateTime.UtcNow.AddDays(-7)),
 
-            RecentSubmissions = await _context.MapCorrections
-                .OrderByDescending(c => c.SubmittedDate)
-                .Take(10)
-                .ToListAsync()
+            RejectedThisWeek = await _context.GeoChanges
+                .CountAsync(c => c.Status == CorrectionStatus.Rejected
+                    && c.ReviewedDate >= DateTime.UtcNow.AddDays(-7))
+        };
+
+        // Get recent submissions from both types
+        var recentMapCorrections = await _context.MapCorrections
+            .OrderByDescending(c => c.SubmittedDate)
+            .Take(5)
+            .ToListAsync();
+
+        var recentAreaChanges = await _context.GeoChanges
+            .OrderByDescending(c => c.SubmittedDate)
+            .Take(5)
+            .ToListAsync();
+
+        var dashboard = new DashboardViewModel
+        {
+            PendingCount = mapCorrectionsTask.PendingCount + areaChangesTask.PendingCount,
+            ApprovedThisWeek = mapCorrectionsTask.ApprovedThisWeek + areaChangesTask.ApprovedThisWeek,
+            RejectedThisWeek = mapCorrectionsTask.RejectedThisWeek + areaChangesTask.RejectedThisWeek,
+            RecentMapCorrections = recentMapCorrections,
+            RecentAreaChanges = recentAreaChanges
         };
 
         return View(dashboard);
