@@ -8,5 +8,9 @@ public class CorrectionReviewViewModel
     public CorrectionStatus Status { get; set; }
     public string? ReviewComment { get; set; }
     public string SubmittedBy { get; set; }
-    public DateTime SubmittedDate { get; set; }
+    public string? Municipality { get; set; }  // For displaying kommune
+
+    public string Type { get; set; }  // "map" or "area"
+    public string GeoJson { get; set; }  // For area changes
+    public DateTime SubmittedDate { get; set; }  // Date of submission
 }

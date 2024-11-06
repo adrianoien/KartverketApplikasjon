@@ -8,7 +8,7 @@
         <div class="col-md-3">
             <div class="card mb-3">
                 <div class="card-body">
-                    <h5 class="card-title">Location Info</h5>
+                    <h5 class="card-title">Stedsinformasjon</h5>
                     <div id="kommuneInfo" class="mb-3">
                         <!-- Kommune info will be displayed here -->
                     </div>
@@ -17,27 +17,50 @@
 
             <div class="card mb-3">
                 <div class="card-body">
-                    <h5 class="card-title">Register Change</h5>
+                    <h5 class="card-title">Registrer Endring</h5>
                     <form id="changeForm">
                         <div class="mb-3">
-                            <label class="form-label">Type of Change</label>
-                            <select id="changeType" class="form-select">
-                                <option value="area">Area Change</option>
-                                <option value="point">Point Correction</option>
+                            <label class="form-label">Type Endring</label>
+                            <select id="changeType" class="form-select" onchange="updateDescription()">
+                                <option value="area">Områdeendring</option>
+                                <option value="point">Punktkorreksjon</option>
                             </select>
                         </div>
+                        <!-- Beskrivelse som endres dynamisk basert på valg -->
+                        <div class="mb-3" id="dynamicDescription" style="font-style: italic; color: gray;">
+                            <!-- Standard tekst når ingen valg er gjort -->
+                            Velg en type endring for å se beskrivelse her.
+                        </div>
                         <div class="mb-3">
-                            <label for="description" class="form-label">Description</label>
-                            <textarea id="description" class="form-control" rows="3" required></textarea>
+                            <label for="description" class="form-label">Beskrivelse</label>
+                            <textarea id="description" class="form-control" rows="3" placeholder="Beskriv endringen du foreslår" required></textarea>
                         </div>
                         <input type="hidden" id="geoJsonInput" name="geoJson" />
                         <input type="hidden" id="latitudeInput" name="latitude" />
                         <input type="hidden" id="longitudeInput" name="longitude" />
-                        <button type="submit" class="btn btn-primary">Submit Change</button>
+                        <button type="submit" class="btn btn-primary">Send Inn Endring</button>
                     </form>
                 </div>
             </div>
 
+            <script>
+                // Funksjon som oppdaterer beskrivelsen basert på valgt endringstype
+                function updateDescription() {
+                    const changeType = document.getElementById("changeType").value;
+                    const descriptionDiv = document.getElementById("dynamicDescription");
+
+                    if (changeType === "area") {
+                        descriptionDiv.textContent = "Områdeendring – Juster grenser eller store geografiske områder som skog, vann eller mark.";
+                    } else if (changeType === "point") {
+                        descriptionDiv.textContent = "Punktkorreksjon – Korriger plasseringen av spesifikke punkter som bygninger eller veier.";
+                    } else {
+                        descriptionDiv.textContent = "Velg en type endring for å se beskrivelse her.";
+                    }
+                }
+
+                // Kall funksjonen ved start for å sette standardbeskrivelse
+                updateDescription();
+            </script>
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Recent Changes</h5>

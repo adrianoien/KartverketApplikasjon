@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;  // For ToListAsync()
 using KartverketApplikasjon.Models;  // For MapCorrections and CorrectionStatus
+using KartverketApplikasjon.Controllers;
 
 [Authorize(Roles = "Saksbehandler")]
 public class CorrectionManagementController : Controller
@@ -49,52 +50,91 @@ public class CorrectionManagementController : Controller
     }
 
     // Show detailed view of a correction
-    public async Task<IActionResult> Review(int id)
+    [HttpGet]
+    public async Task<IActionResult> Review(int id, string type)
     {
-        var correction = await _context.MapCorrections.FindAsync(id);
-
-        if (correction == null)
-            return NotFound();
-
-        var viewModel = new CorrectionReviewViewModel
+        if (type == "map")
         {
-            Id = correction.Id,
-            Description = correction.Description,
-            Latitude = correction.Latitude,
-            Longitude = correction.Longitude,
-            Status = correction.Status,
-            ReviewComment = correction.ReviewComment,
-            SubmittedBy = correction.SubmittedBy,
-            SubmittedDate = correction.SubmittedDate
-        };
+            var correction = await _context.MapCorrections.FindAsync(id);
+            if (correction == null)
+                return NotFound();
 
-        return View(viewModel);
+            var viewModel = new CorrectionReviewViewModel
+            {
+                Id = correction.Id,
+                Type = "map",
+                Description = correction.Description,
+                Latitude = correction.Latitude,
+                Longitude = correction.Longitude,
+                Status = correction.Status,
+                ReviewComment = correction.ReviewComment,
+                SubmittedBy = correction.SubmittedBy,
+                SubmittedDate = correction.SubmittedDate
+            };
+
+            return View(viewModel);
+        }
+        else if (type == "area")
+        {
+            var areaChange = await _context.GeoChanges.FindAsync(id);
+            if (areaChange == null)
+                return NotFound();
+
+            var viewModel = new CorrectionReviewViewModel
+            {
+                Id = areaChange.Id,
+                Type = "area",
+                Description = areaChange.Description,
+                GeoJson = areaChange.GeoJson,
+                Status = areaChange.Status,
+                ReviewComment = areaChange.ReviewComment,
+                SubmittedBy = areaChange.SubmittedBy,
+                SubmittedDate = areaChange.SubmittedDate
+            };
+
+            return View(viewModel);
+        }
+
+        return NotFound();
     }
 
     [HttpPost]
-    public async Task<IActionResult> Review(int id, CorrectionStatus status, string reviewComment)
+    public async Task<IActionResult> Review(int id, string type, CorrectionStatus status, string reviewComment)
     {
-        var correction = await _context.MapCorrections.FindAsync(id);
+        if (type == "map")
+        {
+            var correction = await _context.MapCorrections.FindAsync(id);
+            if (correction == null)
+                return NotFound();
 
-        if (correction == null)
-            return NotFound();
+            correction.Status = status;
+            correction.ReviewComment = reviewComment;
+            correction.ReviewedBy = User.Identity.Name;
+            correction.ReviewedDate = DateTime.UtcNow;
+        }
+        else if (type == "area")
+        {
+            var areaChange = await _context.GeoChanges.FindAsync(id);
+            if (areaChange == null)
+                return NotFound();
 
-        correction.Status = status;
-        correction.ReviewComment = reviewComment;
-        correction.ReviewedBy = User.Identity.Name;
-        correction.ReviewedDate = DateTime.UtcNow;
+            areaChange.Status = status;
+            areaChange.ReviewComment = reviewComment;
+            areaChange.ReviewedBy = User.Identity.Name;
+            areaChange.ReviewedDate = DateTime.UtcNow;
+        }
 
         try
         {
             await _context.SaveChangesAsync();
-            TempData["Success"] = $"Correction has been {status.ToString().ToLower()}";
+            TempData["Success"] = $"Change has been {status.ToString().ToLower()}";
             return RedirectToAction(nameof(Index));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error updating correction status");
             ModelState.AddModelError("", "An error occurred while updating the correction.");
-            return View(correction);
+            return View();
         }
     }
 
