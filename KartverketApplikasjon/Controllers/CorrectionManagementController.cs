@@ -59,13 +59,20 @@ public class CorrectionManagementController : Controller
             if (correction == null)
                 return NotFound();
 
+            // Add validation and default values if needed
+            var latitude = string.IsNullOrEmpty(correction.Latitude) ? "0" : correction.Latitude;
+            var longitude = string.IsNullOrEmpty(correction.Longitude) ? "0" : correction.Longitude;
+
+            // Log the values
+            _logger.LogInformation($"Coordinates from DB - Lat: '{latitude}', Lng: '{longitude}'");
+
             var viewModel = new CorrectionReviewViewModel
             {
                 Id = correction.Id,
                 Type = "map",
                 Description = correction.Description,
-                Latitude = correction.Latitude,
-                Longitude = correction.Longitude,
+                Latitude = latitude,
+                Longitude = longitude,
                 Status = correction.Status,
                 ReviewComment = correction.ReviewComment,
                 SubmittedBy = correction.SubmittedBy,
@@ -80,17 +87,40 @@ public class CorrectionManagementController : Controller
             if (areaChange == null)
                 return NotFound();
 
+            // Ensure GeoJSON is valid
+            var geoJson = areaChange.GeoJson;
+            if (!string.IsNullOrEmpty(geoJson))
+            {
+                // Remove any extra quotes if they exist
+                geoJson = geoJson.Trim('"');
+                // Ensure it's valid JSON
+                try
+                {
+                    System.Text.Json.JsonDocument.Parse(geoJson);
+                }
+                catch
+                {
+                    // If parsing fails, try to clean up the string
+                    geoJson = geoJson.Replace("\\\"", "\"").Replace("\\\\", "\\");
+                }
+            }
+
             var viewModel = new CorrectionReviewViewModel
             {
                 Id = areaChange.Id,
                 Type = "area",
                 Description = areaChange.Description,
-                GeoJson = areaChange.GeoJson,
+                GeoJson = geoJson, // Use the cleaned up version
                 Status = areaChange.Status,
                 ReviewComment = areaChange.ReviewComment,
                 SubmittedBy = areaChange.SubmittedBy,
                 SubmittedDate = areaChange.SubmittedDate
             };
+
+            // Add logging to help debug
+            _logger.LogInformation($"Area change ID: {id}");
+            _logger.LogInformation($"Original GeoJson: {areaChange.GeoJson}");
+            _logger.LogInformation($"Cleaned GeoJson: {geoJson}");
 
             return View(viewModel);
         }

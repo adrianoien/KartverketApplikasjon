@@ -70,7 +70,7 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Location Map</h5>
-                    <div id="map" style="height: 400px;"></div>
+                    <div id="map" style="height: 400px; width: 100%;"></div>
                 </div>
             </div>
         </div>
@@ -79,42 +79,86 @@
 
 @section Scripts {
     <script>
-        // Initialize map
-        var map = L.map('map');
+        // Sjekk om kartet allerede eksisterer
+        if (typeof map === 'undefined') {
+            // Hvis ikke, initialiser et nytt kart
+            var map = L.map('map').setView([62.0, 10.0], 4);
 
-        L.tileLayer('https://cache.kartverket.no/v1/wmts/1.0.0/topo/default/webmercator/{z}/{y}/{x}.png', {
-            attribution: 'Map data © Kartverket'
-        }).addTo(map);
+            // Bruk Kartverkets tile layer
+            L.tileLayer('https://cache.kartverket.no/v1/wmts/1.0.0/topo/default/webmercator/{z}/{y}/{x}.png', {
+                attribution: 'Map data © Kartverket',
+                maxZoom: 18,
+                minZoom: 3
+            }).addTo(map);
+        } else {
+            console.log("Kartet er allerede initialisert.");
+        }
 
         @if (Model.Type == "map")
         {
             <text>
-                    var lat = @Model.Latitude;
-                    var lng = @Model.Longitude;
-                    map.setView([lat, lng], 15);
-                    L.marker([lat, lng])
-                    .addTo(map)
-                    .bindPopup('@Model.Description')
-                    .openPopup();
+                    (function () {
+                        // Default coordinates for Norway if none provided
+                        var defaultLat = 62.0;
+                    var defaultLng = 10.0;
 
-                    // Fetch municipality information
-                    fetch(`https://api.kartverket.no/kommuneinfo/v1/punkt?nord=${lat}&ost=${lng}&koordsys=4326`)
-                            .then(response => response.json())
-                            .then(data => {
-                        document.getElementById('municipality').textContent = data.kommunenavn || 'Not found';
-                            })
-                            .catch(error => {
+                    // Get coordinates from model
+                    var lat = '@Model.Latitude';
+                    var lng = '@Model.Longitude';
+
+                    console.log('Raw coordinates:', {lat, lng});
+
+                    // Parse coordinates, use defaults if invalid
+                    lat = !isNaN(parseFloat(lat)) ? parseFloat(lat) : defaultLat;
+                    lng = !isNaN(parseFloat(lng)) ? parseFloat(lng) : defaultLng;
+
+                    console.log('Parsed coordinates:', {lat, lng});
+
+                    map.whenReady(function () {
+                        console.log('Setting map view to:', { lat, lng });
+                    map.setView([lat, lng], lat === defaultLat ? 4 : 15);
+
+                    if (lat !== defaultLat || lng !== defaultLng) {
+                        L.marker([lat, lng])
+                            .addTo(map)
+                            .bindPopup('@Html.Raw(Json.Serialize(Model.Description))')
+                            .openPopup();
+                            }
+
+                    // Only fetch municipality if we're not using default coordinates
+                    if (lat !== defaultLat && lng !== defaultLng) {
+                                const params = new URLSearchParams({
+                        nord: lat.toString(),
+                    ost: lng.toString(),
+                    koordsys: '4326'
+                                });
+
+                    const apiUrl = `https://api.kartverket.no/kommuneinfo/v1/punkt?${params}`;
+                    console.log('Fetching municipality data from:', apiUrl);
+
+                    fetch(apiUrl)
+                                    .then(response => {
+                        console.log('Municipality API response:', response.status);
+                    if (!response.ok) {
+                                            throw new Error(`HTTP error! status: ${response.status}`);
+                                        }
+                    return response.json();
+                                    })
+                                    .then(data => {
+                        console.log('Municipality data:', data);
+                    document.getElementById('municipality').textContent =
+                    data && data.kommunenavn ? data.kommunenavn : 'Not found';
+                                    })
+                    .catch(function (error) {
                         console.error('Error fetching municipality:', error);
-                    document.getElementById('municipality').textContent = 'Could not determine municipality';
-                            });
-            </text>
-        }
-        else
-        {
-            <text>
-                    var geoJson = @Html.Raw(Model.GeoJson);
-                    var layer = L.geoJSON(geoJson).addTo(map);
-                    map.fitBounds(layer.getBounds());
+                    document.getElementById('municipality').textContent =
+                    'Could not determine municipality';
+                                    });
+                            } else {
+                        document.getElementById('municipality').textContent = 'No location specified';
+                            }
+                        });
+                    })(); // Close IIFE
             </text>
         }
     </script>
