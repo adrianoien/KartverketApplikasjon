@@ -31,7 +31,14 @@
                         <dd class="col-sm-8">@Model.SubmittedDate.ToString("g")</dd>
 
                         <dt class="col-sm-4">Current Status</dt>
-                        <dd class="col-sm-8">@Model.Status</dd>
+                        <dd class="col-sm-8">
+                            <span class="badge bg-@(Model.Status switch {
+                                CorrectionStatus.Pending => "warning",
+                                CorrectionStatus.Approved => "success",
+                                CorrectionStatus.Rejected => "danger",
+                                _ => "secondary"
+                            })">@Model.Status</span>
+                        </dd>
                     </dl>
                 </div>
             </div>
@@ -70,7 +77,7 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Location Map</h5>
-                    <div id="map" style="height: 400px; width: 100%;"></div>
+                    <div id="map" style="height: 500px; width: 100%;"></div>
                 </div>
             </div>
         </div>
@@ -78,6 +85,10 @@
 </div>
 
 @section Scripts {
+    <!-- Inkluder nødvendige Leaflet-filer -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
     <script>
         console.log('Model Type:', '@Model.Type');
         console.log('Current Working URL:', window.location.href);
@@ -96,12 +107,22 @@
             console.log("Kartet er allerede initialisert.");
         }
 
+        // Funksjon for å style GeoJSON
+        function styleGeoJson() {
+            return {
+                color: '#FF4444',
+                weight: 3,
+                opacity: 0.7,
+                fillOpacity: 0.3
+            };
+        }
+
         @if (Model.Type == "map")
         {
             <text>
                     (function () {
-                        // Standardkoordinater for Norge dersom ingen er angitt
-                        var defaultLat = 62.0;
+                            // Standardkoordinater for Norge dersom ingen er angitt
+                            var defaultLat = 62.0;
                     var defaultLng = 10.0;
 
                     // Hent koordinater fra modellen
@@ -125,44 +146,91 @@
                             .addTo(map)
                             .bindPopup(@Html.Raw(Json.Serialize(Model.Description)))
                             .openPopup();
-                            }
+                                }
 
-                    // Kun hent kommuneinformasjon hvis vi ikke bruker standardkoordinater
+                    // Hent kommuneinformasjon
                     if (lat !== defaultLat && lng !== defaultLng) {
-                                const params = new URLSearchParams({
+                                    const params = new URLSearchParams({
                         nord: lat.toString(),
                     ost: lng.toString(),
                     koordsys: '4326'
-                                });
+                                    });
 
                     const apiUrl = `https://api.kartverket.no/kommuneinfo/v1/punkt?${params.toString()}`;
                     console.log('Henter kommuneinformasjon fra:', apiUrl);
 
                     fetch(apiUrl)
-                                    .then(response => {
+                                        .then(response => {
                         console.log('Kommune API-respons:', response.status);
                     if (!response.ok) {
-                                            throw new Error(`HTTP-feil! status: ${response.status}`);
-                                        }
+                                                throw new Error(`HTTP-feil! status: ${response.status}`);
+                                            }
                     return response.json();
-                                    })
-                                    .then(data => {
+                                        })
+                                        .then(data => {
                         console.log('Kommuneinformasjon:', data);
                     document.getElementById('municipality').textContent =
                     data && data.kommunenavn ? data.kommunenavn : 'Ikke funnet';
-                                    })
+                                        })
                     .catch(function (error) {
                         console.error('Feil ved henting av kommune:', error);
                     document.getElementById('municipality').textContent =
                     'Kunne ikke bestemme kommune';
-                                    });
-                            } else {
+                                        });
+                                } else {
                         document.getElementById('municipality').textContent = 'Ingen lokasjon spesifisert';
-                            }
-                        });
-                    })(); // Lukker IIFE
+                                }
+                            });
+                        })();
             </text>
         }
+        else if (Model.Type == "area")
+        {
+            <text>
+                    try {
+                            // Parse og vis GeoJSON-data
+                            var geoJsonData = @Html.Raw(Model.GeoJson);
+                    console.log('GeoJSON-data:', geoJsonData);
 
+                    // Legg til GeoJSON-laget med styling
+                    var geoJsonLayer = L.geoJSON(geoJsonData, {
+                        style: styleGeoJson,
+                    onEachFeature: function(feature, layer) {
+                        layer.bindPopup(@Html.Raw(Json.Serialize(Model.Description)));
+                                }
+                            }).addTo(map);
+
+                    // Tilpass kartet til å vise hele området
+                    var bounds = geoJsonLayer.getBounds();
+                    map.fitBounds(bounds, {
+                        padding: [50, 50] // Legg til padding rundt området
+                            });
+
+                    // Hent kommuneinformasjon for senterpunktet av området
+                    var center = bounds.getCenter();
+                    const params = new URLSearchParams({
+                        nord: center.lat.toString(),
+                    ost: center.lng.toString(),
+                    koordsys: '4326'
+                            });
+
+                    fetch(`https://api.kartverket.no/kommuneinfo/v1/punkt?${params.toString()}`)
+                                .then(response => response.json())
+                                .then(data => {
+                        document.getElementById('municipality').textContent =
+                        data && data.kommunenavn ? data.kommunenavn : 'Ikke funnet';
+                                })
+                                .catch(error => {
+                        console.error('Feil ved henting av kommune:', error);
+                    document.getElementById('municipality').textContent = 'Kunne ikke bestemme kommune';
+                                });
+                        } catch (error) {
+                        console.error('Feil ved visning av GeoJSON:', error);
+                    console.error('GeoJSON-data:', @Html.Raw(Json.Serialize(Model.GeoJson)));
+                    map.setView([59.9139, 10.7522], 4); // Standard visning av Oslo
+                    document.getElementById('municipality').textContent = 'Feil ved visning av område';
+                        }
+            </text>
+        }
     </script>
 }
