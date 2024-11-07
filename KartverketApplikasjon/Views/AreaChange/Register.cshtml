@@ -207,7 +207,7 @@
                 });
         }
 
-        document.getElementById('changeForm').addEventListener('submit', function(e) {
+        document.getElementById('changeForm').addEventListener('submit', function (e) {
             e.preventDefault();
 
             const data = {
@@ -218,6 +218,11 @@
                 longitude: document.getElementById('longitudeInput').value
             };
 
+            // Add debug logging
+            console.log('Submitting data:', data);
+            console.log('Latitude value:', document.getElementById('latitudeInput').value);
+            console.log('Longitude value:', document.getElementById('longitudeInput').value);
+
             fetch('/AreaChange/SaveChange', {
                 method: 'POST',
                 headers: {
@@ -225,21 +230,25 @@
                 },
                 body: JSON.stringify(data)
             })
-            .then(response => response.json())
-            .then(result => {
-                if (result.success) {
-                    alert('Change saved successfully!');
-                    drawnItems.clearLayers();
-                    document.getElementById('changeForm').reset();
-                    loadExistingChanges();
-                } else {
-                    alert('Error saving change: ' + result.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error saving change');
-            });
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    return response.json();
+                })
+                .then(result => {
+                    console.log('Save result:', result);
+                    if (result.success) {
+                        alert('Change saved successfully!');
+                        drawnItems.clearLayers();
+                        document.getElementById('changeForm').reset();
+                        loadExistingChanges();
+                    } else {
+                        alert('Error saving change: ' + result.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error saving change');
+                });
         });
 
         initMap();

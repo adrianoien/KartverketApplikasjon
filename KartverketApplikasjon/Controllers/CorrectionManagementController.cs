@@ -59,20 +59,14 @@ public class CorrectionManagementController : Controller
             if (correction == null)
                 return NotFound();
 
-            // Add validation and default values if needed
-            var latitude = string.IsNullOrEmpty(correction.Latitude) ? "0" : correction.Latitude;
-            var longitude = string.IsNullOrEmpty(correction.Longitude) ? "0" : correction.Longitude;
-
-            // Log the values
-            _logger.LogInformation($"Coordinates from DB - Lat: '{latitude}', Lng: '{longitude}'");
 
             var viewModel = new CorrectionReviewViewModel
             {
                 Id = correction.Id,
                 Type = "map",
                 Description = correction.Description,
-                Latitude = latitude,
-                Longitude = longitude,
+                Latitude = correction.Latitude,
+                Longitude = correction.Longitude,
                 Status = correction.Status,
                 ReviewComment = correction.ReviewComment,
                 SubmittedBy = correction.SubmittedBy,

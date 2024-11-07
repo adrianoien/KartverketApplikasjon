@@ -79,6 +79,8 @@
 
 @section Scripts {
     <script>
+        console.log('Model Type:', '@Model.Type');
+        console.log('Current Working URL:', window.location.href);
         // Sjekk om kartet allerede eksisterer
         if (typeof map === 'undefined') {
             // Hvis ikke, initialiser et nytt kart
@@ -116,7 +118,7 @@
 
                     map.whenReady(function () {
                         console.log('Setter kartvisning til:', { lat, lng });
-                    map.setView([lat, lng], lat === defaultLat ? 4 : 15);
+                    map.setView([lat, lng], 15);  // Set zoom level to 15 for better view
 
                     if (lat !== defaultLat || lng !== defaultLng) {
                         L.marker([lat, lng])
