@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="~/css/index.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/modal.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/navbar.css" asp-append-version="true" />
+    
     <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
           integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
@@ -66,7 +67,8 @@
                             <div class="nav-divider"></div>
 
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Home" asp-action="MySubmissions">
+                                <a class="nav-link" asp-controller="Home" asp-action="My
+s">
                                     Mine Innleveringer
                                 </a>
                             </li>
@@ -104,7 +106,7 @@
                         {
                             <p class="welcome-text">Velkommen @User.Identity.Name!</p>
                             <form asp-controller="Account" asp-action="Logout" method="post">
-                                <button type="submit" class="btn btn-primary btn-sm">Logg ut</button>
+                                <button type="submit" class="btn-primary-lo">Logg ut</button>
                             </form>
                         }
                         else

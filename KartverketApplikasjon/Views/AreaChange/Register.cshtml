@@ -1,11 +1,13 @@
 ﻿@model KartverketApplikasjon.Models.UnifiedMapViewModel
 
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-9">
-            <div id="map" style="height: 600px;"></div>
+<div class="layout">
+    <div class="map-container">
+        <div id="map"></div>
+           
         </div>
-        <div class="col-md-3">
+
+    <div class="sidebar">
+            
             <div class="card mb-3">
                 <div class="card-body">
                     <h5 class="card-title">Stedsinformasjon</h5>
@@ -18,22 +20,54 @@
             <div class="card mb-3">
                 <div class="card-body">
                     <h5 class="card-title">Registrer Endring</h5>
-                    <form id="changeForm">
-                        <div class="mb-3">
-                            <label class="form-label">Type Endring</label>
-                            <select id="changeType" class="form-select" onchange="updateDescription()">
-                                <option value="area">Områdeendring</option>
-                                <option value="point">Punktkorreksjon</option>
-                            </select>
+                    <div class="change-type-selector mb-4">
+                        <div class="type-option mb-3">
+                            <button type="button" class="btn w-100 text-start p-3 type-button" data-type="point" onclick="selectChangeType('point')">
+                                <h6 class="mb-2">Punktkorreksjon</h6>
+                                <small class="d-block text-muted">
+                                    Marker et enkelt punkt på kartet for å rapportere:
+                                    <ul class="mt-1 ms-3">
+                                        <li>Feil plassering av bygning</li>
+                                        <li>Manglende landemerke</li>
+                                        <li>Feilplassert vei eller sti</li>
+                                    </ul>
+                                </small>
+                            </button>
                         </div>
-                        <!-- Beskrivelse som endres dynamisk basert på valg -->
-                        <div class="mb-3" id="dynamicDescription" style="font-style: italic; color: gray;">
-                            <!-- Standard tekst når ingen valg er gjort -->
-                            Velg en type endring for å se beskrivelse her.
+                        <div class="type-option mb-3">
+                            <button type="button" class="btn w-100 text-start p-3 type-button" data-type="area" onclick="selectChangeType('area')">
+                                <h6 class="mb-2">Områdeendring</h6>
+                                <small class="d-block text-muted">
+                                    Tegn et område på kartet for å rapportere:
+                                    <ul class="mt-1 ms-3">
+                                        <li>Endringer i vegetasjon eller terreng</li>
+                                        <li>Nye utbyggingsområder</li>
+                                        <li>Vannområder som har endret seg</li>
+                                    </ul>
+                                </small>
+                            </button>
                         </div>
+                    </div>
+
+                    <div id="instructionsAlert" class="alert alert-info d-none">
+                        <div class="d-flex">
+                            <div class="me-2">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <div>
+                                <strong>Neste steg:</strong>
+                                <p class="mb-0" id="instructionText"></p>
+                            </div>
+                            <button type="button" class="btn-close ms-auto" onclick="dismissInstructions()"></button>
+                        </div>
+                    </div>
+
+                    <form id="changeForm" class="mt-3">
+                        <input type="hidden" id="changeType" name="changeType" />
                         <div class="mb-3">
                             <label for="description" class="form-label">Beskrivelse</label>
-                            <textarea id="description" class="form-control" rows="3" placeholder="Beskriv endringen du foreslår" required></textarea>
+                            <textarea id="description" class="form-control" rows="3"
+                                      placeholder="Beskriv endringen du foreslår" required></textarea>
                         </div>
                         <input type="hidden" id="geoJsonInput" name="geoJson" />
                         <input type="hidden" id="latitudeInput" name="latitude" />
@@ -42,36 +76,34 @@
                     </form>
                 </div>
             </div>
-
-            <script>
-                // Funksjon som oppdaterer beskrivelsen basert på valgt endringstype
-                function updateDescription() {
-                    const changeType = document.getElementById("changeType").value;
-                    const descriptionDiv = document.getElementById("dynamicDescription");
-
-                    if (changeType === "area") {
-                        descriptionDiv.textContent = "Områdeendring – Juster grenser eller store geografiske områder som skog, vann eller mark.";
-                    } else if (changeType === "point") {
-                        descriptionDiv.textContent = "Punktkorreksjon – Korriger plasseringen av spesifikke punkter som bygninger eller veier.";
-                    } else {
-                        descriptionDiv.textContent = "Velg en type endring for å se beskrivelse her.";
-                    }
-                }
-
-                // Kall funksjonen ved start for å sette standardbeskrivelse
-                updateDescription();
-            </script>
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Recent Changes</h5>
-                    <div id="recentChangesList" class="list-group">
-                        <!-- Populated by JavaScript -->
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 </div>
+
+<style>
+    .layout {
+        display: flex;
+        width: 100%;
+        height: calc(100vh - 80px);
+    }
+
+    .map-container { 
+        flex: 3;
+        height: 100%;
+    }
+
+    #map {
+        width: 100%;
+        height: 100%;
+    }
+
+    .sidebar {
+        flex: 1;
+        padding: 15px;
+        background: white;
+        overflow-y: auto;
+    }
+</style>
 
 @section Scripts {
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -79,9 +111,41 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
 
+    <style>
+        .type-button {
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            transition: all 0.2s;
+            cursor: pointer !important;
+            position: relative;
+            z-index: 10;
+        }
+
+            .type-button:hover {
+                border-color: #bfdbfe;
+                background-color: #f8fafc;
+                transform: translateY(-1px);
+            }
+
+            .type-button.active {
+                border-color: #3b82f6;
+                background-color: #eff6ff;
+            }
+
+            .type-button ul {
+                list-style-type: disc;
+                pointer-events: none;
+            }
+
+            .type-button small {
+                pointer-events: none;
+            }
+    </style>
+
     <script>
-        let map, drawnItems;
+        let map, drawnItems, drawControl;
         let currentMarker = null;
+        let currentDrawing = null;
 
         function initMap() {
             map = L.map('map').setView([59.9139, 10.7522], 13);
@@ -91,46 +155,129 @@
 
             drawnItems = new L.FeatureGroup().addTo(map);
 
-            const drawControl = new L.Control.Draw({
+            // Initialize draw control (will be configured based on selection)
+            drawControl = new L.Control.Draw({
                 edit: {
                     featureGroup: drawnItems
                 },
                 draw: {
-                    polygon: true,
-                    polyline: true,
-                    rectangle: true,
+                    polygon: false,
+                    polyline: false,
+                    rectangle: false,
                     circle: false,
-                    marker: true
+                    marker: false
                 }
             });
+
             map.addControl(drawControl);
 
-            map.on(L.Draw.Event.CREATED, function (e) {
-                drawnItems.clearLayers();
-                const layer = e.layer;
-                drawnItems.addLayer(layer);
-
-                if (e.layerType === 'marker') {
-                    const latLng = layer.getLatLng();
-                    document.getElementById('latitudeInput').value = latLng.lat;
-                    document.getElementById('longitudeInput').value = latLng.lng;
-                    document.getElementById('changeType').value = 'point';
-                    fetchKommuneInfo(latLng.lat, latLng.lng);
-                } else {
-                    document.getElementById('geoJsonInput').value = JSON.stringify(layer.toGeoJSON());
-                    document.getElementById('changeType').value = 'area';
-                    const bounds = layer.getBounds();
-                    const center = bounds.getCenter();
-                    fetchKommuneInfo(center.lat, center.lng);
-                }
-            });
-
-            map.on('click', function(e) {
+            map.on(L.Draw.Event.CREATED, handleDrawCreated);
+            map.on('click', function (e) {
                 fetchKommuneInfo(e.latlng.lat, e.latlng.lng);
             });
 
             loadExistingChanges();
             locateUser();
+        }
+
+        function clearCurrentDrawing() {
+            if (currentDrawing) {
+                drawnItems.removeLayer(currentDrawing);
+                currentDrawing = null;
+            }
+        }
+
+        function handleDrawCreated(e) {
+            clearCurrentDrawing();
+            drawnItems.clearLayers();
+
+            const layer = e.layer;
+            drawnItems.addLayer(layer);
+            currentDrawing = layer;
+
+            if (e.layerType === 'marker') {
+                const latLng = layer.getLatLng();
+                document.getElementById('latitudeInput').value = latLng.lat;
+                document.getElementById('longitudeInput').value = latLng.lng;
+                fetchKommuneInfo(latLng.lat, latLng.lng);
+            } else {
+                // For polygon, polyline, rectangle
+                if (layer.getBounds) {
+                    const bounds = layer.getBounds();
+                    const center = bounds.getCenter();
+                    document.getElementById('geoJsonInput').value = JSON.stringify(layer.toGeoJSON());
+                    fetchKommuneInfo(center.lat, center.lng);
+                }
+            }
+        }
+
+        function selectChangeType(type) {
+            // Update UI
+            document.querySelectorAll('.type-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-type="${type}"]`).classList.add('active');
+
+            // Update hidden input
+            document.getElementById('changeType').value = type;
+
+            // Clear existing drawings
+            clearCurrentDrawing();
+            drawnItems.clearLayers();
+
+            // Reset form inputs
+            document.getElementById('geoJsonInput').value = '';
+            document.getElementById('latitudeInput').value = '';
+            document.getElementById('longitudeInput').value = '';
+
+            // Configure draw control based on type
+            if (type === 'point') {
+                map.removeControl(drawControl);
+                drawControl = new L.Control.Draw({
+                    edit: {
+                        featureGroup: drawnItems
+                    },
+                    draw: {
+                        polygon: false,
+                        polyline: false,
+                        rectangle: false,
+                        circle: false,
+                        marker: true
+                    }
+                });
+                map.addControl(drawControl);
+
+                // Show instructions
+                showInstructions('Klikk på kartet der du vil plassere markøren for punktkorreksjonen.');
+            } else if (type === 'area') {
+                map.removeControl(drawControl);
+                drawControl = new L.Control.Draw({
+                    edit: {
+                        featureGroup: drawnItems
+                    },
+                    draw: {
+                        polygon: true,
+                        polyline: true,
+                        rectangle: true,
+                        circle: false,
+                        marker: false
+                    }
+                });
+                map.addControl(drawControl);
+
+                // Show instructions
+                showInstructions('Bruk tegneverktøyene i menyen for å markere området som skal endres.');
+            }
+        }
+
+        function showInstructions(text) {
+            const alert = document.getElementById('instructionsAlert');
+            document.getElementById('instructionText').textContent = text;
+            alert.classList.remove('d-none');
+        }
+
+        function dismissInstructions() {
+            document.getElementById('instructionsAlert').classList.add('d-none');
         }
 
         function fetchKommuneInfo(lat, lon) {
@@ -142,11 +289,11 @@
                 .then(data => {
                     if (data.kommunenavn) {
                         kommuneInfoDiv.innerHTML = `
-                            <div class="alert alert-info mb-0">
-                                <strong>Kommune:</strong> ${data.kommunenavn}<br>
-                                <strong>Kommune Number:</strong> ${data.kommunenummer}<br>
-                                <strong>Coordinates:</strong> ${lat.toFixed(4)}, ${lon.toFixed(4)}
-                            </div>`;
+                                    <div class="alert alert-info mb-0">
+                                        <strong>Kommune:</strong> ${data.kommunenavn}<br>
+                                        <strong>Kommune Number:</strong> ${data.kommunenummer}<br>
+                                        <strong>Coordinates:</strong> ${lat.toFixed(4)}, ${lon.toFixed(4)}
+                                    </div>`;
                     } else {
                         kommuneInfoDiv.innerHTML = '<div class="alert alert-warning mb-0">Kommune information not found</div>';
                     }
@@ -157,32 +304,24 @@
                 });
         }
 
-        function locateUser() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(position) {
-                    const lat = position.coords.latitude;
-                    const lon = position.coords.longitude;
-                    map.setView([lat, lon], 13);
-
-                    L.marker([lat, lon])
-                        .addTo(map)
-                        .bindPopup('Your location')
-                        .openPopup();
-
-                    fetchKommuneInfo(lat, lon);
-                }, function(error) {
-                    console.error('Geolocation error:', error);
-                });
-            }
-        }
-
         function loadExistingChanges() {
             fetch('/AreaChange/GetAllChanges')
                 .then(response => response.json())
                 .then(data => {
                     if (data.areas) {
                         data.areas.forEach(area => {
-                            L.geoJSON(JSON.parse(area.geoJson)).addTo(map);
+                            try {
+                                const geoJson = JSON.parse(area.geoJson);
+                                L.geoJSON(geoJson, {
+                                    style: {
+                                        color: '#FF4444',
+                                        weight: 2,
+                                        opacity: 0.7
+                                    }
+                                }).addTo(map);
+                            } catch (e) {
+                                console.error('Error parsing GeoJSON:', e);
+                            }
                         });
                     }
 
@@ -195,20 +334,61 @@
                     }
 
                     const recentList = document.getElementById('recentChangesList');
-                    recentList.innerHTML = '';
-                    [...(data.areas || []), ...(data.points || [])].sort((a, b) =>
-                        new Date(b.submittedDate) - new Date(a.submittedDate)
-                    ).slice(0, 5).forEach(change => {
-                        const item = document.createElement('a');
-                        item.className = 'list-group-item list-group-item-action';
-                        item.textContent = change.description;
-                        recentList.appendChild(item);
-                    });
+                    if (recentList) {
+                        recentList.innerHTML = '';
+                        [...(data.areas || []), ...(data.points || [])].sort((a, b) =>
+                            new Date(b.submittedDate) - new Date(a.submittedDate)
+                        ).slice(0, 5).forEach(change => {
+                            const item = document.createElement('a');
+                            item.className = 'list-group-item list-group-item-action';
+                            item.textContent = change.description;
+                            recentList.appendChild(item);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading existing changes:', error);
                 });
+        }
+
+        function locateUser() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    map.setView([lat, lon], 13);
+
+                    L.marker([lat, lon])
+                        .addTo(map)
+                        .bindPopup('Your location')
+                        .openPopup();
+
+                    fetchKommuneInfo(lat, lon);
+                }, function (error) {
+                    console.error('Geolocation error:', error);
+                });
+            }
         }
 
         document.getElementById('changeForm').addEventListener('submit', function (e) {
             e.preventDefault();
+
+            if (!document.getElementById('changeType').value) {
+                alert('Vennligst velg en endringstype først.');
+                return;
+            }
+
+            if (document.getElementById('changeType').value === 'point' &&
+                (!document.getElementById('latitudeInput').value || !document.getElementById('longitudeInput').value)) {
+                alert('Vennligst marker et punkt på kartet først.');
+                return;
+            }
+
+            if (document.getElementById('changeType').value === 'area' &&
+                !document.getElementById('geoJsonInput').value) {
+                alert('Vennligst tegn et område på kartet først.');
+                return;
+            }
 
             const data = {
                 type: document.getElementById('changeType').value,
@@ -218,11 +398,6 @@
                 longitude: document.getElementById('longitudeInput').value
             };
 
-            // Add debug logging
-            console.log('Submitting data:', data);
-            console.log('Latitude value:', document.getElementById('latitudeInput').value);
-            console.log('Longitude value:', document.getElementById('longitudeInput').value);
-
             fetch('/AreaChange/SaveChange', {
                 method: 'POST',
                 headers: {
@@ -230,16 +405,16 @@
                 },
                 body: JSON.stringify(data)
             })
-                .then(response => {
-                    console.log('Response status:', response.status);
-                    return response.json();
-                })
+                .then(response => response.json())
                 .then(result => {
-                    console.log('Save result:', result);
                     if (result.success) {
                         alert('Change saved successfully!');
+                        clearCurrentDrawing();
                         drawnItems.clearLayers();
                         document.getElementById('changeForm').reset();
+                        document.getElementById('geoJsonInput').value = '';
+                        document.getElementById('latitudeInput').value = '';
+                        document.getElementById('longitudeInput').value = '';
                         loadExistingChanges();
                     } else {
                         alert('Error saving change: ' + result.message);

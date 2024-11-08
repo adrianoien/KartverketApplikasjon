@@ -313,3 +313,17 @@ body, html {
         .footer-content a:hover {
             border-bottom: 1px solid white;
         }
+
+.btn-primary-lo {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+    .btn-primary-lo:hover {
+        background-color: #45a049;
+    }
