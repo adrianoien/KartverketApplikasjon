@@ -1,4 +1,15 @@
-For å koble til med MariaDB så må man gjøre følgende: 
+<h2>Oversikt over applikasjon<h2>
+<p><Strong>Prosjektnavn<Strong/>: Kartverket Applikasjon</p>
+
+<p><Strong>Beskrivelse<strong/>: Denne applikasjonen utvikles etter Kartverket's behover. Det skal være en webapplikasjon der brukeren kan sende inn forslag til endringer i Kart, og en saksbehandler kan behandle forslagene. Brukeren skal registrere seg for å kunne foreslå endringer. Ved innlogging kan også brukeren se en oversikt med status over foreslåtte endringer.<p/>
+<br/>
+ 
+<h2>Aplikasjonens arkitektur</h2>
+<p>Denne applikasjonen følger MVC (Model-View-Controller) arkitekturen...</p>
+<br/>
+
+<h2>Hvordan kjøre applikasjonen</h2>
+For å koble til med MariaDB så må man gjøre følgende:
 
 Når du kompilerer fila i Visual Studio, så gjør det igjennom docker compose. 
  - Trykk på menyen hvor du builder, gå inn på "Configure startup projects"
@@ -14,12 +25,7 @@ Enkle kommandoer for å se om den er koblet til:
 SHOW DATABASES;
 SHOW TABLES;
 
-
-You’ll want to include the following sections in your documentation:
-
-Application Setup (Architecture): Document the overall structure of your application. Explain the architecture, such as the MVC pattern, database setup, and any integrations.
-
-How to Run the Application: Describe the steps to run the application, including Docker setup, connecting to the database, and any prerequisites.
+<h2>Andre ting vi må dokumentere:</h2>
 
 Application Components: Explain the key components (e.g., MVC controllers, repositories, classes) and their roles.
 
