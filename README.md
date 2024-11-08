@@ -1,12 +1,12 @@
-<h2>Oversikt over applikasjon<h2>
-<p><Strong>Prosjektnavn<Strong/>: Kartverket Applikasjon</p>
+<h2>Oversikt over applikasjon</h2>
+<p><strong>Prosjektnavn</strong>: Kartverket Applikasjon</strong></p>
 
-<p><Strong>Beskrivelse<strong/>: Denne applikasjonen utvikles etter Kartverket's behover. Det skal være en webapplikasjon der brukeren kan sende inn forslag til endringer i Kart, og en saksbehandler kan behandle forslagene. Brukeren skal registrere seg for å kunne foreslå endringer. Ved innlogging kan også brukeren se en oversikt med status over foreslåtte endringer.<p/>
-<br/>
+<p><strong>Beskrivelse</strong>: Denne applikasjonen utvikles etter Kartverket's behover. Det skal være en webapplikasjon der brukeren kan sende inn forslag til endringer i Kart, og en saksbehandler kan behandle forslagene. Brukeren skal registrere seg for å kunne foreslå endringer. Ved innlogging kan også brukeren se en oversikt med status over foreslåtte endringer.</p>
+<br>
  
-<h2>Aplikasjonens arkitektur</h2>
+<h2>Aplikasjonens arkitektur<h2/>
 <p>Denne applikasjonen følger MVC (Model-View-Controller) arkitekturen...</p>
-<br/>
+<br>
 
 <h2>Hvordan kjøre applikasjonen</h2>
 For å koble til med MariaDB så må man gjøre følgende:
@@ -24,7 +24,7 @@ exec -it mariadb mariadb -u root geochangesdb -p
 Enkle kommandoer for å se om den er koblet til: 
 SHOW DATABASES;
 SHOW TABLES;
-
+<br>
 <h2>Andre ting vi må dokumentere:</h2>
 
 Application Components: Explain the key components (e.g., MVC controllers, repositories, classes) and their roles.
