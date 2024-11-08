@@ -4,7 +4,7 @@
 <p><strong>Beskrivelse</strong>: Denne applikasjonen utvikles etter Kartverket's behover. Det skal være en webapplikasjon der brukeren kan sende inn forslag til endringer i Kart, og en saksbehandler kan behandle forslagene. Brukeren skal registrere seg for å kunne foreslå endringer. Ved innlogging kan også brukeren se en oversikt med status over foreslåtte endringer.</p>
 <br>
  
-<h2>Aplikasjonens arkitektur<h2/>
+<h2>Aplikasjonens arkitektur</h2>
 <p>Denne applikasjonen følger MVC (Model-View-Controller) arkitekturen...</p>
 <br>
 
