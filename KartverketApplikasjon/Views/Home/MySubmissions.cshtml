@@ -1,31 +1,31 @@
 ﻿@model KartverketApplikasjon.Models.UnifiedMapViewModel
 
 <div class="container">
-    <h2>My Submissions</h2>
+    <h2>Mine innmeldinger</h2>
 
     <div class="row mb-4">
         <div class="col">
-            <h3>Point Corrections</h3>
+            <h3>Punktkorreksjoner</h3>
             @foreach (var submission in Model.Positions)
             {
                 <div class="card mb-3">
                     <div class="card-body">
-                        <h5 class="card-title">Point Correction</h5>
+                        <h5 class="card-title">Punktkorreksjoner</h5>
                         <div class="mb-2">
                             <span class="badge bg-@(submission.Status switch {
-                                CorrectionStatus.Pending => "warning",
-                                CorrectionStatus.Approved => "success",
-                                CorrectionStatus.Rejected => "danger",
-                                _ => "secondary"
-                            })">@submission.Status</span>
+    CorrectionStatus.Pending => "warning",
+    CorrectionStatus.Approved => "success",
+    CorrectionStatus.Rejected => "danger",
+    _ => "secondary"
+})">@submission.Status.ToNorwegian()</span>
                         </div>
                         <p class="card-text">@submission.Description</p>
                         <p class="card-text"><small>Location: [@submission.Latitude, @submission.Longitude]</small></p>
-                        <p class="card-text"><small class="text-muted">Submitted: @submission.SubmittedDate.ToString("g")</small></p>
+                        <p class="card-text"><small class="text-muted">Sendt inn: @submission.SubmittedDate.ToString("g")</small></p>
                         @if (!string.IsNullOrEmpty(submission.ReviewComment))
                         {
                             <div class="alert alert-info">
-                                <strong>Reviewer Comment:</strong><br />
+                                <strong>Tilbakemelding:</strong><br />
                                 @submission.ReviewComment
                             </div>
                         }
@@ -35,22 +35,22 @@
         </div>
 
         <div class="col">
-            <h3>Area Changes</h3>
+            <h3>Områdeendringer</h3>
             @foreach (var change in Model.Changes)
             {
                 <div class="card mb-3">
                     <div class="card-body">
-                        <h5 class="card-title">Area Change</h5>
+                        <h5 class="card-title">Områdeendringer</h5>
                         <div class="mb-2">
                             <span class="badge bg-@(change.Status switch {
-                                CorrectionStatus.Pending => "warning",
-                                CorrectionStatus.Approved => "success",
-                                CorrectionStatus.Rejected => "danger",
-                                _ => "secondary"
-                            })">@change.Status</span>
+                CorrectionStatus.Pending => "warning",
+                CorrectionStatus.Approved => "success",
+                CorrectionStatus.Rejected => "danger",
+                _ => "secondary"
+            })">@change.Status.ToNorwegian()</span>
                         </div>
                         <p class="card-text">@change.Description</p>
-                        <p class="card-text"><small class="text-muted">Submitted: @change.SubmittedDate.ToString("g")</small></p>
+                        <p class="card-text"><small class="text-muted">Innsendt: @change.SubmittedDate.ToString("g")</small></p>
                     </div>
                 </div>
             }

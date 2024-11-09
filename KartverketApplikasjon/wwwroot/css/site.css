@@ -21,3 +21,70 @@ body {
   margin-bottom: 60px;
 }
 
+.custom-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    margin: 15% auto;
+    padding: 20px;
+    width: 50%;
+    position: relative;
+    border-radius: 5px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.close-button {
+    cursor: pointer;
+    font-size: 24px;
+}
+
+.modal-body {
+    margin-bottom: 20px;
+}
+
+    .modal-body input {
+        width: 100%;
+        padding: 8px;
+        margin: 8px 0;
+    }
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+    .modal-footer button {
+        padding: 8px 16px;
+        cursor: pointer;
+    }
+
+#searchResults {
+    margin-top: 10px;
+}
+
+    #searchResults div {
+        padding: 8px;
+        cursor: pointer;
+        border: 1px solid #ddd;
+        margin-bottom: 4px;
+    }
+
+        #searchResults div:hover {
+            background-color: #f0f0f0;
+        }

@@ -47,3 +47,51 @@
         padding: 8px;
         box-sizing: border-box;
     }
+
+
+.dropdown-toggle {
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+    .dropdown-toggle:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+.modal-footer button {
+    padding: 8px 16px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+    .modal-footer button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+.nav-link.dropdown-toggle {
+    border: none;
+    box-shadow: none; 
+    padding: 0; 
+    background-color: transparent; 
+}
+
+.navbar .nav-link {
+    padding: 0; 
+}
+
+#saksbehandlerSelect {
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+    #saksbehandlerSelect option {
+        padding: 8px 12px;
+        cursor: pointer;
+    }
+
+        #saksbehandlerSelect option:hover {
+            background-color: #f8f9fa;
+        }

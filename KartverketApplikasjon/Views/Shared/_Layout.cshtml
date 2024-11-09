@@ -10,9 +10,10 @@
     <link rel="stylesheet" href="~/KartverketApplikasjon.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/mycsstheme.css" />
     <link rel="stylesheet" href="~/css/index.css" asp-append-version="true" />
+   
     <link rel="stylesheet" href="~/css/modal.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/navbar.css" asp-append-version="true" />
-    
+    <link rel="stylesheet" href="~/css/assignment.css" asp-append-version="true" />
     <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
           integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
@@ -67,10 +68,7 @@
                             <div class="nav-divider"></div>
 
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Home" asp-action="My
-s">
-                                    Mine Innleveringer
-                                </a>
+                                <a class="nav-link" asp-controller="Home" asp-action="MySubmissions">Mine Innleveringer</a>
                             </li>
 
                             @if (User.IsInRole("Saksbehandler"))
@@ -86,7 +84,7 @@ s">
                                     <ul class="dropdown-menu" aria-labelledby="manageDropdown">
                                         <li>
                                             <a class="dropdown-item" asp-controller="CorrectionManagement" asp-action="Dashboard">
-                                                Dashboard
+                                                Dashbord
                                             </a>
                                         </li>
                                         <li>
