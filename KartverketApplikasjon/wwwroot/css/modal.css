@@ -80,3 +80,18 @@
 .navbar .nav-link {
     padding: 0; 
 }
+
+#saksbehandlerSelect {
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+    #saksbehandlerSelect option {
+        padding: 8px 12px;
+        cursor: pointer;
+    }
+
+        #saksbehandlerSelect option:hover {
+            background-color: #f8f9fa;
+        }

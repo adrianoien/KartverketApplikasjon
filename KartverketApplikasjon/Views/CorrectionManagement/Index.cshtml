@@ -11,25 +11,25 @@
 
 
 <div class="container mt-4">
-    <h2>Changes Management</h2>
+    <h2>Håndtering av innmeldinger</h2>
 
     <div class="mb-4">
         <div class="btn-group" role="group">
             <a asp-action="Index" asp-route-status="Pending"
-               class="btn @(ViewBag.CurrentFilter == "Pending" ? "btn-success" : "btn-outline-success")">
-                PENDING
+               class="btn @(ViewBag.CurrentFilter == "Pågår" ? "btn-success" : "btn-outline-success")">
+                PÅGÅR
             </a>
             <a asp-action="Index" asp-route-status="Approved"
-               class="btn @(ViewBag.CurrentFilter == "Approved" ? "btn-success" : "btn-outline-success")">
-                APPROVED
+               class="btn @(ViewBag.CurrentFilter == "Godkjent" ? "btn-success" : "btn-outline-success")">
+                GODKJENT
             </a>
             <a asp-action="Index" asp-route-status="Rejected"
-               class="btn @(ViewBag.CurrentFilter == "Rejected" ? "btn-success" : "btn-outline-success")">
-                REJECTED
+               class="btn @(ViewBag.CurrentFilter == "Avvist" ? "btn-success" : "btn-outline-success")">
+                AVVIST
             </a>
             <a asp-action="Index" asp-route-status="All"
-               class="btn @(ViewBag.CurrentFilter == "All" ? "btn-success" : "btn-outline-success")">
-                ALL
+               class="btn @(ViewBag.CurrentFilter == "Alle" ? "btn-success" : "btn-outline-success")">
+                ALLE
             </a>
         </div>
     </div>
@@ -43,31 +43,31 @@
     <div id="assignModal" class="custom-modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h5>Assign Case</h5>
+                <h5>Tildel Sak</h5>
                 <span class="close-button">&times;</span>
             </div>
             <div class="modal-body">
-                <div>
-                    <label>Saksbehandler</label>
-                    <input type="text" id="saksbehandlerSearch" placeholder="Search for saksbehandler...">
-                    <div id="searchResults">
-                        <!-- Results will be populated here -->
-                    </div>
+                <div class="mb-3">
+                    <label class="form-label">Velg eller søk etter saksbehandler</label>
+                    <input type="text" id="saksbehandlerSearch" class="form-control mb-2"
+                           placeholder="Søk etter saksbehandler...">
+                    <select id="saksbehandlerSelect" class="form-select" size="6">
+                        @foreach (var handler in ViewBag.Saksbehandlere)
+                        {
+                            <option value="@handler.Email" data-name="@handler.Name.ToLower()">@handler.Name</option>
+                        }
+                    </select>
                 </div>
-                <div id="selectedHandler" style="display: none;">
-                    <p>Selected: <span id="selectedHandlerName"></span></p>
-                    <input type="hidden" id="selectedHandlerId">
+                <div id="noResults" class="alert alert-info d-none">
+                    Ingen saksbehandlere funnet
                 </div>
             </div>
             <div class="modal-footer">
-                <button id="cancelAssignment" class="btn btn-primary">Cancel</button>
-                <button id="saveAssignment" class="btn btn-primary">Save Assignment</button>
+                <button id="cancelAssignment" class="btn btn-secondary">Avbryt</button>
+                <button id="saveAssignment" class="btn btn-primary">Lagre</button>
             </div>
         </div>
     </div>
-
-
-                             
                             
                 
                    
@@ -84,17 +84,17 @@
         </div>
     }
 
-    <h3 class="mt-4 mb-3">Map Corrections</h3>
+    <h3 class="mt-4 mb-3">Punktendringer</h3>
     <div class="table-responsive">
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>Description</th>
+                    <th>Beskrivelse</th>
                     <th>Kommune</th>
-                    <th>Submitted By</th>
-                    <th>Submitted Date</th>
+                    <th>Innsender</th>
+                    <th>Innsendelsdato</th>
                     <th>Status</th>
-                    <th>Assigned To</th>
+                    <th>Ansvarlig</th>
                     
                 </tr>
             </thead>
@@ -143,7 +143,7 @@
                                             <a href="#" class="dropdown-item"
                                                data-action="assign"
                                                data-correction-id="@item.Id"
-                                               data-correction-type="map">Assign Case</a>
+                                               data-correction-type="map">Tildel sak</a>
                                         </li>
                                     </ul>
                                 </div>
@@ -154,7 +154,7 @@
                             
                             <td>
                                 <a asp-action="Review" asp-route-id="@item.Id" asp-route-type="map"
-                                   class="btn btn-sm btn-primary">Review</a>
+                                   class="btn btn-sm btn-primary">Gjennomgå</a>
                             </td>
                         </tr>
                     }
@@ -162,24 +162,24 @@
                 else
                 {
                     <tr>
-                        <td colspan="7" class="text-center">No map corrections found</td>
+                        <td colspan="7" class="text-center">Ingen endringer er foreløpig sendt inn</td>
                     </tr>
                 }
             </tbody>
         </table>
     </div>
 
-    <h3 class="mt-5 mb-3">Area Changes</h3>
+    <h3 class="mt-5 mb-3">Områdeendringer</h3>
     <div class="table-responsive">
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>Description</th>
+                    <th>Beskrivelse</th>
                     <th>Kommune</th>
-                    <th>Submitted By</th>
-                    <th>Submitted Date</th>
+                    <th>Innsender</th>
+                    <th>Innsendelsdato</th>
                     <th>Status</th>
-                    <th>Assigned To</th>
+                    <th>Ansvarlig</th>
                     
                 </tr>
             </thead>
@@ -225,14 +225,14 @@
                                             <a href="#" class="dropdown-item"
                                                data-action="assign"
                                                data-correction-id="@item.Id"
-                                               data-correction-type="area">Assign Case</a>
+                                               data-correction-type="area">Tildel sak</a>
                                         </li>
                                     </ul>
                                 </div>
                             </td>
                             <td>
                                 <a asp-action="Review" asp-route-id="@item.Id" asp-route-type="area"
-                                   class="btn btn-sm btn-primary">Review</a>
+                                   class="btn btn-sm btn-primary">Gjennomgå</a>
                             </td>
                         </tr>
                     }
@@ -240,7 +240,7 @@
                 else
                 {
                     <tr>
-                        <td colspan="7" class="text-center">No area changes found</td>
+                        <td colspan="7" class="text-center">Ingen endringer er foreløpig sendt inn</td>
                     </tr>
                 }
             </tbody>
@@ -255,7 +255,8 @@
         const modal = document.getElementById('assignModal');
         const closeBtn = document.querySelector('.close-button');
         const searchInput = document.getElementById('saksbehandlerSearch');
-        const searchResults = document.getElementById('searchResults');
+        const selectElement = document.getElementById('saksbehandlerSelect');
+        const noResults = document.getElementById('noResults');
         let selectedCorrectionId = null;
         let selectedCorrectionType = null;
 
@@ -312,16 +313,20 @@
             }
         }
 
-        // Show modal when "Assign Case" is clicked
-        document.addEventListener('click', function(e) {
-            if (e.target.dataset.action === 'assign') {
-                selectedCorrectionId = e.target.dataset.correctionId;
-                selectedCorrectionType = e.target.dataset.correctionType;
-                modal.style.display = 'block';
-                document.getElementById('selectedHandler').style.display = 'none';
-                searchInput.value = '';
-                searchResults.innerHTML = '';
-            }
+            // Show modal when "Assign Case" is clicked
+            document.addEventListener('click', function (e) {
+                if (e.target.dataset.action === 'assign') {
+                    selectedCorrectionId = e.target.dataset.correctionId;
+                    selectedCorrectionType = e.target.dataset.correctionType;
+                    modal.style.display = 'block';
+                    searchInput.value = '';
+                    filterOptions('');
+                }
+            });
+
+        // Handle search input
+        searchInput.addEventListener('input', function (e) {
+            filterOptions(e.target.value.toLowerCase());
         });
 
         // Close modal handlers
@@ -355,27 +360,21 @@
             }, 300);
         });
 
-        // Fetch saksbehandlere
-        async function fetchSaksbehandlere(searchTerm) {
-            try {
-                const response = await fetch(`/CorrectionManagement/SearchSaksbehandlere?term=${encodeURIComponent(searchTerm)}`);
-                const data = await response.json();
-                displaySearchResults(data);
-            } catch (error) {
-                console.error('Error fetching saksbehandlere:', error);
-                searchResults.innerHTML = '<div>Error fetching results</div>';
-            }
-        }
+       
 
-        // Display search results
-        function displaySearchResults(results) {
-            searchResults.innerHTML = '';
-            results.forEach(handler => {
-                const item = document.createElement('div');
-                item.textContent = `${handler.name} (${handler.email})`;
-                item.onclick = () => selectHandler(handler);
-                searchResults.appendChild(item);
+      
+        // Filter options based on search
+        function filterOptions(searchTerm) {
+            let hasVisibleOptions = false;
+            Array.from(selectElement.options).forEach(option => {
+                const name = option.getAttribute('data-name');
+                const email = option.value.toLowerCase();
+                const matches = name.includes(searchTerm) || email.includes(searchTerm);
+                option.style.display = matches ? '' : 'none';
+                if (matches) hasVisibleOptions = true;
             });
+
+            noResults.classList.toggle('d-none', hasVisibleOptions);
         }
 
         // Select handler
@@ -388,10 +387,13 @@
         }
 
         // Handle assignment save
-        document.getElementById('saveAssignment').addEventListener('click', async function() {
-            const selectedHandlerId = document.getElementById('selectedHandlerId').value;
+        document.getElementById('saveAssignment').addEventListener('click', async function () {
+            // Get value directly from select element
+            const selectedHandlerId = document.getElementById('saksbehandlerSelect').value;
+            console.log('Selected handler ID:', selectedHandlerId); // For debugging
+
             if (!selectedHandlerId) {
-                alert('Please select a saksbehandler');
+                alert('Vennligst velg en saksbehandler');
                 return;
             }
 
@@ -411,11 +413,11 @@
                 if (response.ok) {
                     location.reload();
                 } else {
-                    alert('Error assigning case');
+                    alert('Feil ved tildeling av sak');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('Error assigning case');
+                alert('Feil ved tildeling av sak');
             }
         });
     </script>

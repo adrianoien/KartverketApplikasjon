@@ -18,6 +18,14 @@ public class CorrectionManagementController : Controller
         _logger = logger;
     }
 
+    private async Task<List<UserData>> GetAllSaksbehandlereAsync()
+    {
+        return await _context.Users
+            .Where(u => u.Role == UserRole.Saksbehandler)
+            .OrderBy(u => u.Name)
+            .ToListAsync();
+    }
+
     // List all corrections with filtering
     public async Task<IActionResult> Index(string status = "Pending")
     {
@@ -50,6 +58,7 @@ public class CorrectionManagementController : Controller
             .ToListAsync();
 
         ViewBag.CurrentFilter = status;
+        ViewBag.Saksbehandlere = await GetAllSaksbehandlereAsync();
         return View((MapCorrections: mapCorrections, AreaChanges: areaChanges));
     }
 
