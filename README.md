@@ -33,8 +33,6 @@ SHOW DATABASES;
 SHOW TABLES;
 <br>  
 
-<h2>Andre ting vi må dokumentere:</h2>  
-
 <h2>Applikasjonskomponenter</h2>
 <p>Explain the key components (e.g., MVC controllers, repositories, classes) and their roles.
 MVC, Model, View og controller. Rammeverket som separer en applikasjon inn i tre logiske komponenter, der vær komponent har som oppgave å handle en spesifikk job i applikasjonen. Med et MVC så separerer du mye av logikken, som for eksempel UI logik, input logikk og business logikk, disse tre har vær sin jobb i applikasjonen.</p>
@@ -55,6 +53,7 @@ Dette er altså hvordan vi bruker MVC i vår web applikasjon for å håndtere lo
 </ul>
 <br>
 
+<h2>Andre ting vi må dokumentere:</h2>
 Application Logic: Document specific code functionality. Explain any complex logic and how it’s implemented.
 
 Unit Testing and Other Tests: Include test scenarios, code examples, and results. Describe any UI tests or other types of testing used.
