@@ -46,13 +46,12 @@ Dette er altså hvordan vi bruker MVC i vår web applikasjon for å håndtere lo
 <br>
 
 <h2>Applikasjonens funksjonalitet</h2>
-<ul>
-<li><strong>Brukerregistrering</strong>: Mulighet til å opprette bruker, og logge inn.</li>
-<li><strong>Vis kart</strong>: Se kart både med eller uten bruker.</li>
-<li><strong>Registrer endringsforslag</strong>: Registrerte brukere kan sende inn forslag til endring i kart.</li>
-<li><strong>Oversikt over endringsforslag</strong>: Registrerte brukere kan se oversikt og status over sine innsendte endringer.</li>
-<li><strong>Tildele endringsforslag</strong>: Innsendte endringsforslag kan bli tildelt den relevante saksbehandleren.</li>
-<li><strong>Behandle endringsforslag</strong>: Saksbehandler kan behandle foreslåtte endringer.</li>
+<p><strong>Brukerregistrering</strong>: Mulighet til å opprette bruker, og logge inn.</p>
+<p><strong>Vis kart</strong>: Se kart både med eller uten bruker.</p>
+<p><strong>Registrer endringsforslag</strong>: Registrerte brukere kan sende inn forslag til endring i kart.</p>
+<p><strong>Oversikt over endringsforslag</strong>: Registrerte brukere kan se oversikt og status over sine innsendte endringer.</p>
+<p><strong>Tildele endringsforslag</strong>: Innsendte endringsforslag kan bli tildelt den relevante saksbehandleren.</p>
+<p><strong>Behandle endringsforslag</strong>: Saksbehandler kan behandle foreslåtte endringer.</p>
 </ul>
 <br>
 
