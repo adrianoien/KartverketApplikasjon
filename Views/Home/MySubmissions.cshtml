@@ -1,0 +1,59 @@
+﻿@model KartverketApplikasjon.Models.UnifiedMapViewModel
+
+<div class="container">
+    <h2>My Submissions</h2>
+
+    <div class="row mb-4">
+        <div class="col">
+            <h3>Point Corrections</h3>
+            @foreach (var submission in Model.Positions)
+            {
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Point Correction</h5>
+                        <div class="mb-2">
+                            <span class="badge bg-@(submission.Status switch {
+                                CorrectionStatus.Pending => "pågående",
+                                CorrectionStatus.Approved => "godkjent",
+                                CorrectionStatus.Rejected => "avslått",
+                                _ => "secondary"
+                            })">@submission.Status</span>
+                        </div>
+                        <p class="card-text">@submission.Description</p>
+                        <p class="card-text"><small>Location: [@submission.Latitude, @submission.Longitude]</small></p>
+                        <p class="card-text"><small class="text-muted">Submitted: @submission.SubmittedDate.ToString("g")</small></p>
+                        @if (!string.IsNullOrEmpty(submission.ReviewComment))
+                        {
+                            <div class="alert alert-info">
+                                <strong>Reviewer Comment:</strong><br />
+                                @submission.ReviewComment
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="col">
+            <h3>Area Changes</h3>
+            @foreach (var change in Model.Changes)
+            {
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Area Change</h5>
+                        <div class="mb-2">
+                            <span class="badge bg-@(change.Status switch {
+                                CorrectionStatus.Pending => "pågående",
+                                CorrectionStatus.Approved => "godkjent",
+                                CorrectionStatus.Rejected => "avslått",
+                                _ => "secondary"
+                            })">@change.Status</span>
+                        </div>
+                        <p class="card-text">@change.Description</p>
+                        <p class="card-text"><small class="text-muted">Submitted: @change.SubmittedDate.ToString("g")</small></p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

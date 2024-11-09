@@ -1,0 +1,62 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+<div class="hero-image">
+    <div class="hero-text">
+        <h1>Velkommen til Kartverket</h1>
+        <p>Her kan du registrere endringer eller feil i kartet</p>
+        <a href="#" class="hero-button">Kom i gang</a>
+    </div>
+
+    <div class="process-cards">
+        <div class="process-card">
+            <div class="process-icon">📍</div>
+            <h3>FINN FEILEN</h3>
+            <p>Zoom inn på kartet og oppdag områder med feil eller mangler</p>
+        </div>
+        <div class="process-card">
+            <div class="process-icon">✏️</div>
+            <h3>MARKER ENDRINGER</h3>
+            <p>Legg inn markeringer der du ser behov for oppdateringer</p>
+        </div>
+        <div class="process-card">
+            <div class="process-icon">📝</div>
+            <h3>BESKRIV ENDRINGEN</h3>
+            <p>Skriv en kort beskrivelse av hva som bør endres eller rettes</p>
+        </div>
+        <div class="process-card">
+            <div class="process-icon">✅</div>
+            <h3>FØLG STATUS</h3>
+            <p>Hold deg oppdatert på status for endringene du har rapportert</p>
+        </div>
+
+
+    </div>
+</div>
+
+<div id="loginModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Logg inn</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">E-post:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Passord:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Logg inn</button>
+        </form>
+        <br />
+        <p>Har du ikke bruker? <a href="@Url.Action("Register", "Account")">Registrer deg her</a></p>
+    </div>
+    <div class="footer-content">
+        © 2024 - KartverketApplikasjon - <a href="/privacy">Privacy</a>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/login.js"></script>
+}

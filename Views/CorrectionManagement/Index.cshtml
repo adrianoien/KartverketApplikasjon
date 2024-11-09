@@ -1,0 +1,192 @@
+﻿@using KartverketApplikasjon.Data
+@using KartverketApplikasjon.Models
+@model (IEnumerable<MapCorrections> MapCorrections, IEnumerable<GeoChange> AreaChanges)
+@{
+    ViewData["Title"] = "Correction Management";
+}
+
+<div class="container mt-4">
+    <h2>Changes Management</h2>
+
+    <div class="mb-4">
+        <div class="btn-group" role="group">
+            <a asp-action="Index" asp-route-status="Avventer"
+               class="btn @(ViewBag.CurrentFilter == "Pending" ? "btn-success" : "btn-outline-success")">
+                PENDING
+            </a>
+            <a asp-action="Index" asp-route-status="Godkjent"
+               class="btn @(ViewBag.CurrentFilter == "Approved" ? "btn-success" : "btn-outline-success")">
+                APPROVED
+            </a>
+            <a asp-action="Index" asp-route-status="Avvist"
+               class="btn @(ViewBag.CurrentFilter == "Rejected" ? "btn-success" : "btn-outline-success")">
+                REJECTED
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <h3 class="mt-4 mb-3">Map Corrections</h3>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Kommune</th>
+                    <th>Submitted By</th>
+                    <th>Submitted Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.MapCorrections.Any())
+                {
+                    @foreach (var item in Model.MapCorrections)
+                    {
+                        <tr>
+                            <td>@item.Description</td>
+                            <td id="municipality-@item.Id">
+                                <!-- Municipality will be populated by JavaScript -->
+                                <span class="text-muted">Loading...</span>
+                            </td>
+                            <td>@item.SubmittedBy</td>
+                            <td>@item.SubmittedDate.ToString("g")</td>
+                            <td>
+                                <span class="badge bg-@(item.Status switch {
+                            CorrectionStatus.Pending => "pågående",
+                            CorrectionStatus.Approved => "godkjent",
+                            CorrectionStatus.Rejected => "avslått",
+                            _ => "secondary"
+                        })">@item.Status</span>
+                            </td>
+                            <td>
+                                <a asp-action="Review" asp-route-id="@item.Id" asp-route-type="map"
+                                   class="btn btn-sm btn-primary">Review</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-center">No map corrections found</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <h3 class="mt-5 mb-3">Area Changes</h3>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Kommune</th>
+                    <th>Submitted By</th>
+                    <th>Submitted Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.AreaChanges.Any())
+                {
+                    @foreach (var item in Model.AreaChanges)
+                    {
+                        <tr>
+                            <td>@item.Description</td>
+                            <td id="municipality-area-@item.Id">Laster...</td>
+                            <td>@item.SubmittedBy</td>
+                            <td>@item.SubmittedDate.ToString("g")</td>
+                            <td>
+                                <span class="badge bg-@(item.Status switch {
+                                    CorrectionStatus.Pending => "pågående",
+                                    CorrectionStatus.Approved => "godkjent",
+                                    CorrectionStatus.Rejected => "avslått",
+                                    _ => "secondary"
+                                })">
+                                    @item.Status
+                                </span>
+                            </td>
+                            <td>
+                                <a asp-action="Review" asp-route-id="@item.Id" asp-route-type="area"
+                                   class="btn btn-sm btn-primary">Review</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5" class="text-center">No area changes found</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        async function fetchMunicipality(lat, lng, elementId) {
+            const params = new URLSearchParams({
+                nord: lat.toString(),
+                ost: lng.toString(),
+                koordsys: '4326'
+            });
+
+            try {
+                const response = await fetch(`https://api.kartverket.no/kommuneinfo/v1/punkt?${params.toString()}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                document.getElementById(elementId).textContent =
+                    data && data.kommunenavn ? `${data.kommunenummer} ${data.kommunenavn}` : 'Ikke funnet';
+            } catch (error) {
+                console.error('Error fetching municipality:', error);
+                document.getElementById(elementId).textContent = 'Kunne ikke bestemme kommune';
+            }
+        }
+
+        // For map corrections
+        @foreach (var item in Model.MapCorrections)
+        {
+            if (!string.IsNullOrEmpty(item.Latitude) && !string.IsNullOrEmpty(item.Longitude))
+            {
+                @:fetchMunicipality(@item.Latitude, @item.Longitude, 'municipality-@item.Id');
+            }
+        }
+
+            // For area changes
+        @foreach (var item in Model.AreaChanges)
+        {
+            if (!string.IsNullOrEmpty(item.GeoJson))
+            {
+                <text>
+                        try {
+                                    const geoJson = JSON.parse(@Html.Raw(Json.Serialize(item.GeoJson)));
+                        if (geoJson.geometry && geoJson.geometry.coordinates && geoJson.geometry.coordinates[0]) {
+                                        const coords = geoJson.geometry.coordinates[0];
+                                        const centerLat = coords.reduce((sum, coord) => sum + coord[1], 0) / coords.length;
+                                        const centerLon = coords.reduce((sum, coord) => sum + coord[0], 0) / coords.length;
+                        fetchMunicipality(centerLat, centerLon, 'municipality-area-@item.Id');
+                                    }
+                                } catch (e) {
+                            console.error('Error parsing GeoJSON:', e);
+                        document.getElementById('municipality-area-@item.Id').textContent = 'Error';
+                                }
+                </text>
+            }
+        }
+    </script>
+}
