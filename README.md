@@ -1,14 +1,14 @@
 <h2>Oversikt over applikasjon</h2>
 <strong>Prosjektnavn</strong>: Kartverket Applikasjon</strong>  
-
+<br>
 <strong>Beskrivelse</strong>: Denne applikasjonen utvikles etter Kartverket's behover. Det skal være en webapplikasjon der brukeren kan sende inn forslag til endringer i Kart, og en saksbehandler kan behandle forslagene. Brukeren skal registrere seg for å kunne foreslå endringer. Ved innlogging kan også brukeren se en oversikt med status over foreslåtte endringer.  
 <br>
  
 <h2>Aplikasjonens arkitektur</h2>
-Denne applikasjonen følger MVC (Model-View-Controller) arkitekturen:
- - <strong>Models</strong> administrerer dataen, logikken og reglene i applikasjonen (for eksempel UserData.cs og MapCorrections.cs).
- - <strong>Views</strong> administrerer UI logikken (for eksempel Index.cshtml og Kart.cshtml).
- - <strong>Controllers</strong> administrerer kommunikasjonen mellom models og views (for eksempel HomeController.cs og AccountController.cs).
+Denne applikasjonen følger MVC (Model-View-Controller) arkitekturen: 
+ - <strong>Models</strong> administrerer dataen, logikken og reglene i applikasjonen (for eksempel UserData.cs og MapCorrections.cs). 
+ - <strong>Views</strong> administrerer UI logikken (for eksempel Index.cshtml og Kart.cshtml). 
+ - <strong>Controllers</strong> administrerer kommunikasjonen mellom models og views (for eksempel HomeController.cs og AccountController.cs).  
 
 Applikasjonen bruker <strong>MariaDB</strong> til å lagre brukerdata og kartendringsdata.  
 <br>
@@ -43,12 +43,12 @@ I vår applikasjon så er Model, Models, det er her vi har de forskjellige model
 Dette er altså hvordan vi bruker MVC i vår web applikasjon for å håndtere logikken til de forskjellige delene.  
 <br>
 
-<h2>Applikasjonens funksjonalitet</h2>
- - <strong>Brukerregistrering</strong>: Mulighet til å opprette bruker, og logge inn.
- - <strong>Vis kart</strong>: Se kart både med eller uten bruker.
- - <strong>Registrer endringsforslag</strong>: Registrerte brukere kan sende inn forslag til endring i kart.
- - <strong>Oversikt over endringsforslag</strong>: Registrerte brukere kan se oversikt og status over sine innsendte endringer.
- - <strong>Tildele endringsforslag</strong>: Innsendte endringsforslag kan bli tildelt den relevante saksbehandleren.
+<h2>Applikasjonens funksjonalitet</h2> 
+ - <strong>Brukerregistrering</strong>: Mulighet til å opprette bruker, og logge inn. 
+ - <strong>Vis kart</strong>: Se kart både med eller uten bruker. 
+ - <strong>Registrer endringsforslag</strong>: Registrerte brukere kan sende inn forslag til endring i kart. 
+ - <strong>Oversikt over endringsforslag</strong>: Registrerte brukere kan se oversikt og status over sine innsendte endringer. 
+ - <strong>Tildele endringsforslag</strong>: Innsendte endringsforslag kan bli tildelt den relevante saksbehandleren. 
  - <strong>Behandle endringsforslag</strong>: Saksbehandler kan behandle foreslåtte endringer.  
 <br>
 
