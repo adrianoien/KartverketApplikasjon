@@ -16,7 +16,7 @@ Denne applikasjonen følger MVC (Model-View-Controller) arkitekturen:
 Applikasjonen bruker **MariaDB** til å lagre brukerdata og kartendringsdata.   
 <br>
 
-## Hvordan kjøre applikasjonen
+## Hvordan kjøre applikasjonen lokalt
 
 Forutsetningsapplikasjoner:
 - Docker Desktop
@@ -27,7 +27,7 @@ Forutsetningsapplikasjoner:
 - Kopier linken til prosjektet på github
 - Lim inn i visual studio
 
-**Steg 2 - Koble til MariaDB**
+**Steg 2 - Koble til MariaDB**  
 Når du kompilerer fila i Visual Studio, så gjør det igjennom docker compose.
 
 - Trykk på menyen hvor du builder, gå inn på "Configure startup projects"
@@ -35,7 +35,7 @@ Når du kompilerer fila i Visual Studio, så gjør det igjennom docker compose.
 
 Nå skal applikasjonen være koblet til databasen
 
-**Steg 2.5 (Hvis nødvendig) - Koble til MariaDB i MySQL Client**
+**Steg 2.5 (Hvis nødvendig) - Koble til MariaDB i MySQL Client**  
 *exec -it mariadb mariadb -u root geochangesdb -p*
 
 Enkle kommandoer for å se om den er koblet til:
