@@ -165,6 +165,7 @@
                     polyline: false,
                     rectangle: false,
                     circle: false,
+                    circlemarker: false,
                     marker: false
                 }
             });
@@ -242,7 +243,8 @@
                         polyline: false,
                         rectangle: false,
                         circle: false,
-                        marker: true
+                        marker: true,
+                        circlemarker: false,
                     }
                 });
                 map.addControl(drawControl);
@@ -260,7 +262,8 @@
                         polyline: true,
                         rectangle: true,
                         circle: false,
-                        marker: false
+                        marker: false,
+                        circlemarker: false,
                     }
                 });
                 map.addControl(drawControl);

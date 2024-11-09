@@ -21,15 +21,19 @@ public class CorrectionManagementController : Controller
     // List all corrections with filtering
     public async Task<IActionResult> Index(string status = "Pending")
     {
-        var correctionStatus = Enum.TryParse<CorrectionStatus>(status, out var parsedStatus)
-            ? parsedStatus
-            : CorrectionStatus.Pending;
+        CorrectionStatus? correctionStatus = status switch
+        {
+            "Approved" => CorrectionStatus.Approved,
+            "Rejected" => CorrectionStatus.Rejected,
+            "All" => null,
+            _ => CorrectionStatus.Pending
+        };
 
         // Get map corrections
         var mapCorrectionsQuery = _context.MapCorrections.AsQueryable();
-        if (status != "All")
+        if (correctionStatus.HasValue)
         {
-            mapCorrectionsQuery = mapCorrectionsQuery.Where(c => c.Status == correctionStatus);
+            mapCorrectionsQuery = mapCorrectionsQuery.Where(c => c.Status == correctionStatus.Value);
         }
         IEnumerable<MapCorrections> mapCorrections = await mapCorrectionsQuery
             .OrderByDescending(c => c.SubmittedDate)
@@ -37,9 +41,9 @@ public class CorrectionManagementController : Controller
 
         // Get area changes
         var areaChangesQuery = _context.GeoChanges.AsQueryable();
-        if (status != "All")
+        if (correctionStatus.HasValue)
         {
-            areaChangesQuery = areaChangesQuery.Where(c => c.Status == correctionStatus);
+            areaChangesQuery = areaChangesQuery.Where(c => c.Status == correctionStatus.Value);
         }
         IEnumerable<GeoChange> areaChanges = await areaChangesQuery
             .OrderByDescending(c => c.SubmittedDate)

@@ -15,20 +15,30 @@
 
     <div class="mb-4">
         <div class="btn-group" role="group">
-            <a asp-action="Index" asp-route-status="Avventer"
+            <a asp-action="Index" asp-route-status="Pending"
                class="btn @(ViewBag.CurrentFilter == "Pending" ? "btn-success" : "btn-outline-success")">
                 PENDING
             </a>
-            <a asp-action="Index" asp-route-status="Godkjent"
+            <a asp-action="Index" asp-route-status="Approved"
                class="btn @(ViewBag.CurrentFilter == "Approved" ? "btn-success" : "btn-outline-success")">
                 APPROVED
             </a>
-            <a asp-action="Index" asp-route-status="Avvist"
+            <a asp-action="Index" asp-route-status="Rejected"
                class="btn @(ViewBag.CurrentFilter == "Rejected" ? "btn-success" : "btn-outline-success")">
                 REJECTED
             </a>
+            <a asp-action="Index" asp-route-status="All"
+               class="btn @(ViewBag.CurrentFilter == "All" ? "btn-success" : "btn-outline-success")">
+                ALL
+            </a>
         </div>
     </div>
+
+    @if (TempData["Success"] != null)
+    {
+       
+    }
+
 
     <div id="assignModal" class="custom-modal">
         <div class="modal-content">
@@ -98,6 +108,7 @@
                     {
                         <tr>
                             <td>@item.Description</td>
+
                             <td id="municipality-@item.Id">Laster...</td>                           
                             <td>@item.SubmittedBy</td>
                             <td>@item.SubmittedDate.ToString("g")</td>
@@ -132,7 +143,7 @@
                                             <a href="#" class="dropdown-item"
                                                data-action="assign"
                                                data-correction-id="@item.Id"
-                                               data-correction-type="area">Assign Case</a>
+                                               data-correction-type="map">Assign Case</a>
                                         </li>
                                     </ul>
                                 </div>
@@ -151,7 +162,7 @@
                 else
                 {
                     <tr>
-                        <td colspan="8" class="text-center">No map corrections found</td>
+                        <td colspan="7" class="text-center">No map corrections found</td>
                     </tr>
                 }
             </tbody>
@@ -214,7 +225,7 @@
                                             <a href="#" class="dropdown-item"
                                                data-action="assign"
                                                data-correction-id="@item.Id"
-                                               data-correction-type="map">Assign Case</a>
+                                               data-correction-type="area">Assign Case</a>
                                         </li>
                                     </ul>
                                 </div>
@@ -229,7 +240,7 @@
                 else
                 {
                     <tr>
-                        <td colspan="5" class="text-center">No area changes found</td>
+                        <td colspan="7" class="text-center">No area changes found</td>
                     </tr>
                 }
             </tbody>
