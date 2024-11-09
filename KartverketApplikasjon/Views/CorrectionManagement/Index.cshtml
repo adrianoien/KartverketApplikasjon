@@ -1,9 +1,14 @@
 ﻿@using KartverketApplikasjon.Data
 @using KartverketApplikasjon.Models
+@using Microsoft.EntityFrameworkCore
 @model (IEnumerable<MapCorrections> MapCorrections, IEnumerable<GeoChange> AreaChanges)
+@inject ApplicationDbContext _context
+
 @{
     ViewData["Title"] = "Correction Management";
+    Layout = "_Layout";
 }
+
 
 <div class="container mt-4">
     <h2>Changes Management</h2>
@@ -25,6 +30,42 @@
         </div>
     </div>
 
+    <div id="assignModal" class="custom-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>Assign Case</h5>
+                <span class="close-button">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <label>Saksbehandler</label>
+                    <input type="text" id="saksbehandlerSearch" placeholder="Search for saksbehandler...">
+                    <div id="searchResults">
+                        <!-- Results will be populated here -->
+                    </div>
+                </div>
+                <div id="selectedHandler" style="display: none;">
+                    <p>Selected: <span id="selectedHandlerName"></span></p>
+                    <input type="hidden" id="selectedHandlerId">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelAssignment" class="btn btn-primary">Cancel</button>
+                <button id="saveAssignment" class="btn btn-primary">Save Assignment</button>
+            </div>
+        </div>
+    </div>
+
+
+                             
+                            
+                
+                   
+                
+            
+        
+  
+
     @if (TempData["Success"] != null)
     {
         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -43,9 +84,13 @@
                     <th>Submitted By</th>
                     <th>Submitted Date</th>
                     <th>Status</th>
-                    <th>Actions</th>
+                    <th>Assigned To</th>
+                    
                 </tr>
             </thead>
+            
+
+
             <tbody>
                 @if (Model.MapCorrections.Any())
                 {
@@ -53,20 +98,49 @@
                     {
                         <tr>
                             <td>@item.Description</td>
-                            <td id="municipality-@item.Id">
-                                <!-- Municipality will be populated by JavaScript -->
-                                <span class="text-muted">Loading...</span>
-                            </td>
+                            <td id="municipality-@item.Id">Laster...</td>                           
                             <td>@item.SubmittedBy</td>
                             <td>@item.SubmittedDate.ToString("g")</td>
                             <td>
                                 <span class="badge bg-@(item.Status switch {
-                            CorrectionStatus.Pending => "warning",
-                            CorrectionStatus.Approved => "success",
-                            CorrectionStatus.Rejected => "danger",
-                            _ => "secondary"
-                        })">@item.Status</span>
+                        CorrectionStatus.Pending => "warning",
+                        CorrectionStatus.Approved => "success",
+                        CorrectionStatus.Rejected => "danger",
+                        _ => "secondary"
+                    })">
+                                    @item.Status
+                                </span>
                             </td>
+                            <td style="text-align: left; width: 150px;">
+                                <div class="assignment-dropdown" style="width: 100%;">
+                                    <button class="assignment-button @(string.IsNullOrEmpty(item.AssignedTo) ? "unassigned" : "assigned")"
+                                            type="button" data-bs-toggle="dropdown">
+                                        @{
+                                            if (string.IsNullOrEmpty(item.AssignedTo))
+                                            {
+                                                @:UNASSIGNED
+                                            }
+                                            else
+                                            {
+                                                var assignedUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == item.AssignedTo);
+                                                @(assignedUser?.Name ?? "Unknown User")
+                                            }
+                                        }
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a href="#" class="dropdown-item"
+                                               data-action="assign"
+                                               data-correction-id="@item.Id"
+                                               data-correction-type="area">Assign Case</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                            
+                              
+                                
+                            
                             <td>
                                 <a asp-action="Review" asp-route-id="@item.Id" asp-route-type="map"
                                    class="btn btn-sm btn-primary">Review</a>
@@ -77,7 +151,7 @@
                 else
                 {
                     <tr>
-                        <td colspan="6" class="text-center">No map corrections found</td>
+                        <td colspan="8" class="text-center">No map corrections found</td>
                     </tr>
                 }
             </tbody>
@@ -94,7 +168,8 @@
                     <th>Submitted By</th>
                     <th>Submitted Date</th>
                     <th>Status</th>
-                    <th>Actions</th>
+                    <th>Assigned To</th>
+                    
                 </tr>
             </thead>
             <tbody>
@@ -117,6 +192,33 @@
                                     @item.Status
                                 </span>
                             </td>
+                            
+                            <td style="text-align: left; width: 150px;">                                
+                                <div class="assignment-dropdown" style="width: 100%;">
+                                    <button class="assignment-button @(string.IsNullOrEmpty(item.AssignedTo) ? "unassigned" : "assigned")"
+                                            type="button" data-bs-toggle="dropdown">
+                                            @{
+                                                if (string.IsNullOrEmpty(item.AssignedTo))
+                                                {
+                                                    @:UNASSIGNED
+                                                }
+                                                else
+                                                {
+                                                    var assignedUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == item.AssignedTo);
+                                                    @(assignedUser?.Name ?? "Unknown User")
+                                                }
+                                            }
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a href="#" class="dropdown-item"
+                                               data-action="assign"
+                                               data-correction-id="@item.Id"
+                                               data-correction-type="map">Assign Case</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
                             <td>
                                 <a asp-action="Review" asp-route-id="@item.Id" asp-route-type="area"
                                    class="btn btn-sm btn-primary">Review</a>
@@ -135,8 +237,18 @@
     </div>
 </div>
 
+
 @section Scripts {
     <script>
+        // Modal functionality
+        const modal = document.getElementById('assignModal');
+        const closeBtn = document.querySelector('.close-button');
+        const searchInput = document.getElementById('saksbehandlerSearch');
+        const searchResults = document.getElementById('searchResults');
+        let selectedCorrectionId = null;
+        let selectedCorrectionType = null;
+
+        // Municipality fetching function
         async function fetchMunicipality(lat, lng, elementId) {
             const params = new URLSearchParams({
                 nord: lat.toString(),
@@ -158,7 +270,7 @@
             }
         }
 
-        // For map corrections
+        // Fetch municipalities for map corrections
         @foreach (var item in Model.MapCorrections)
         {
             if (!string.IsNullOrEmpty(item.Latitude) && !string.IsNullOrEmpty(item.Longitude))
@@ -167,26 +279,133 @@
             }
         }
 
-            // For area changes
+        // Fetch municipalities for area changes
         @foreach (var item in Model.AreaChanges)
         {
             if (!string.IsNullOrEmpty(item.GeoJson))
             {
                 <text>
-                        try {
-                                    const geoJson = JSON.parse(@Html.Raw(Json.Serialize(item.GeoJson)));
+                    try {
+                        const geoJson = JSON.parse(@Html.Raw(Json.Serialize(item.GeoJson)));
                         if (geoJson.geometry && geoJson.geometry.coordinates && geoJson.geometry.coordinates[0]) {
-                                        const coords = geoJson.geometry.coordinates[0];
-                                        const centerLat = coords.reduce((sum, coord) => sum + coord[1], 0) / coords.length;
-                                        const centerLon = coords.reduce((sum, coord) => sum + coord[0], 0) / coords.length;
-                        fetchMunicipality(centerLat, centerLon, 'municipality-area-@item.Id');
-                                    }
-                                } catch (e) {
-                            console.error('Error parsing GeoJSON:', e);
+                            const coords = geoJson.geometry.coordinates[0];
+                            const centerLat = coords.reduce((sum, coord) => sum + coord[1], 0) / coords.length;
+                            const centerLon = coords.reduce((sum, coord) => sum + coord[0], 0) / coords.length;
+                            fetchMunicipality(centerLat, centerLon, 'municipality-area-@item.Id');
+                        }
+                    } catch (e) {
+                        console.error('Error parsing GeoJSON:', e);
                         document.getElementById('municipality-area-@item.Id').textContent = 'Error';
-                                }
+                    }
                 </text>
             }
         }
+
+        // Show modal when "Assign Case" is clicked
+        document.addEventListener('click', function(e) {
+            if (e.target.dataset.action === 'assign') {
+                selectedCorrectionId = e.target.dataset.correctionId;
+                selectedCorrectionType = e.target.dataset.correctionType;
+                modal.style.display = 'block';
+                document.getElementById('selectedHandler').style.display = 'none';
+                searchInput.value = '';
+                searchResults.innerHTML = '';
+            }
+        });
+
+        // Close modal handlers
+        closeBtn.onclick = function() {
+            modal.style.display = 'none';
+        }
+
+        document.getElementById('cancelAssignment').onclick = function() {
+            modal.style.display = 'none';
+        }
+
+        // Close if clicking outside modal
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Search functionality
+        let searchTimeout;
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            const searchTerm = this.value.trim();
+            
+            searchTimeout = setTimeout(() => {
+                if (searchTerm.length >= 2) {
+                    fetchSaksbehandlere(searchTerm);
+                } else {
+                    searchResults.innerHTML = '';
+                }
+            }, 300);
+        });
+
+        // Fetch saksbehandlere
+        async function fetchSaksbehandlere(searchTerm) {
+            try {
+                const response = await fetch(`/CorrectionManagement/SearchSaksbehandlere?term=${encodeURIComponent(searchTerm)}`);
+                const data = await response.json();
+                displaySearchResults(data);
+            } catch (error) {
+                console.error('Error fetching saksbehandlere:', error);
+                searchResults.innerHTML = '<div>Error fetching results</div>';
+            }
+        }
+
+        // Display search results
+        function displaySearchResults(results) {
+            searchResults.innerHTML = '';
+            results.forEach(handler => {
+                const item = document.createElement('div');
+                item.textContent = `${handler.name} (${handler.email})`;
+                item.onclick = () => selectHandler(handler);
+                searchResults.appendChild(item);
+            });
+        }
+
+        // Select handler
+        function selectHandler(handler) {
+            document.getElementById('selectedHandler').style.display = 'block';
+            document.getElementById('selectedHandlerName').textContent = handler.name;
+            document.getElementById('selectedHandlerId').value = handler.email;
+            searchResults.innerHTML = '';
+            searchInput.value = '';
+        }
+
+        // Handle assignment save
+        document.getElementById('saveAssignment').addEventListener('click', async function() {
+            const selectedHandlerId = document.getElementById('selectedHandlerId').value;
+            if (!selectedHandlerId) {
+                alert('Please select a saksbehandler');
+                return;
+            }
+
+            try {
+                const response = await fetch('/CorrectionManagement/AssignCase', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        correctionId: selectedCorrectionId,
+                        correctionType: selectedCorrectionType,
+                        assignTo: selectedHandlerId
+                    })
+                });
+
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Error assigning case');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error assigning case');
+            }
+        });
     </script>
 }

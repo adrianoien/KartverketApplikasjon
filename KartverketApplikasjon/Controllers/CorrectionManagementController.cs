@@ -216,4 +216,60 @@ public class CorrectionManagementController : Controller
 
         return View(dashboard);
     }
+
+    [HttpGet]
+    public async Task<IActionResult> SearchSaksbehandlere(string term)
+    {
+        try
+        {
+            var saksbehandlere = await _context.Users
+                .Where(u => u.Role == UserRole.Saksbehandler &&
+                           (u.Name.Contains(term) || u.Email.Contains(term)))
+                  .Select(u => new { name = u.Name, username = u.Name, email = u.Email })
+                .ToListAsync();
+
+            return Json(saksbehandlere);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error searching for saksbehandlere: {ex.Message}");
+            return Json(new List<object>());
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> AssignCase([FromBody] AssignCaseModel model)
+    {
+        try
+        {
+            if (model.CorrectionType == "map")
+            {
+                var correction = await _context.MapCorrections.FindAsync(model.CorrectionId);
+                if (correction != null)
+                {
+                    correction.AssignedTo = model.AssignTo;
+                    correction.AssignmentDate = DateTime.UtcNow;
+                    correction.AssignmentStatus = AssignmentStatus.Assigned;
+                }
+            }
+            else if (model.CorrectionType == "area")
+            {
+                var areaChange = await _context.GeoChanges.FindAsync(model.CorrectionId);
+                if (areaChange != null)
+                {
+                    areaChange.AssignedTo = model.AssignTo;
+                    areaChange.AssignmentDate = DateTime.UtcNow;
+                    areaChange.AssignmentStatus = AssignmentStatus.Assigned;
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            return Json(new { success = true });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error assigning case: {ex.Message}");
+            return Json(new { success = false, message = "Error assigning case" });
+        }
+    }
 }
