@@ -21,11 +21,13 @@ Applikasjonen bruker **MariaDB** til å lagre brukerdata og kartendringsdata.
 Forutsetningsapplikasjoner:
 - Docker Desktop
 - Visual studio (eller lignende IDE)  
+<br>
 
 **Steg 1 - Klon repository**
 - Gå på "clone repository" i visual studio
 - Kopier linken til prosjektet på github
 - Lim inn i visual studio  
+<br>
 
 **Steg 2 - Koble til MariaDB**  
 Når du kompilerer fila i Visual Studio, så gjør det igjennom docker compose.
@@ -34,6 +36,7 @@ Når du kompilerer fila i Visual Studio, så gjør det igjennom docker compose.
 - Velg docker-compose og kjør denne
 
 Nå skal applikasjonen være koblet til databasen  
+<br>
 
 **Steg 2.5 (Hvis nødvendig) - Koble til MariaDB i MySQL Client**  
 *exec -it mariadb mariadb -u root geochangesdb -p*
@@ -43,6 +46,7 @@ Enkle kommandoer for å se om den er koblet til:
 *SHOW DATABASES;*
 
 *SHOW TABLES;*  
+<br>
 
 **Steg 3 - Kjør applikasjonen**
 - Gå inn på applikasjonen
