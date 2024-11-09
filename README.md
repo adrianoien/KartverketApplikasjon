@@ -31,7 +31,7 @@ Forutsetningsapplikasjoner:
 Når du kompilerer fila i Visual Studio, så gjør det igjennom docker compose.
 
 - Trykk på menyen hvor du builder, gå inn på "Configure startup projects"
-- Velg docker-compose
+- Velg docker-compose og kjør denne
 
 Nå skal applikasjonen være koblet til databasen
 
@@ -45,7 +45,7 @@ Enkle kommandoer for å se om den er koblet til:
 *SHOW TABLES;*
 
 **Steg 3 - Kjør applikasjonen**
-- Bytt over til dockerfile i builder menyen og kjør applikasjonen
+- Gå inn på applikasjonen
 - Lag bruker og test funksjonalitet!
 <br>
 
