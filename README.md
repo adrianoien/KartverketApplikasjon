@@ -82,7 +82,7 @@ Application Logic: Document specific code functionality. Explain any complex log
 
 Unit Testing and Other Tests: Include test scenarios, code examples, and results. Describe any UI tests or other types of testing used.
 
-💡 Slik bruker du applikasjonen
+## 💡 Slik bruker du applikasjonen
 For brukere
 Registrering og innlogging
 
@@ -99,7 +99,7 @@ Marker på kartet
 Fyll ut beskrivelse
 Send inn endring
 
-For saksbehandlere
+## For saksbehandlere
 Behandle endringer
 
 Logg inn som saksbehandler
@@ -107,7 +107,7 @@ Gå til "Behandle Endringer" → "Dashboard"
 Se oversikt over ventende saker
 Klikk på en sak for å behandle den
 
-🛠 Teknisk oversikt
+## 🛠 Teknisk oversikt
 Bygget med
 
 - ASP.NET Core MVC
@@ -117,12 +117,12 @@ Bygget med
 - MariaDB for database
 
 
-👥 Bidra til prosjektet
+## 👥 Dette er et åpent-kilde prosjekt, som betyr at hvem som helst kan bidra, inkludert deg!
 
-Fork prosjektet
-Lag en feature branch (git checkout -b feature/MinNyeFunksjon)
-Commit endringene (git commit -m 'Lagt til MinNyeFunksjon')
-Push til branch (git push origin feature/MinNyeFunksjon)
-Åpne en Pull Request
+-- Fork prosjektet
+-- Lag en feature branch (git checkout -b feature/MinNyeFunksjon)
+-- Commit endringene (git commit -m 'Lagt til MinNyeFunksjon')
+-- Push til branch (git push origin feature/MinNyeFunksjon)
+-- Åpne en Pull Request
 
 Code Changes (Changelog): Document changes to the code, including what was changed, who made the change, and when.
