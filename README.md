@@ -118,10 +118,10 @@ Bygget med
 
 ## 👥 Dette er et åpent-kilde prosjekt, som betyr at hvem som helst kan bidra, inkludert deg!
 
--- Fork prosjektet
--- Lag en feature branch (git checkout -b feature/MinNyeFunksjon)
--- Commit endringene (git commit -m 'Lagt til MinNyeFunksjon')
--- Push til branch (git push origin feature/MinNyeFunksjon)
--- Åpne en Pull Request
+- Fork prosjektet
+- Lag en feature branch (git checkout -b feature/MinNyeFunksjon)
+- Commit endringene (git commit -m 'Lagt til MinNyeFunksjon')
+- Push til branch (git push origin feature/MinNyeFunksjon)
+- Åpne en Pull Request
 
 Code Changes (Changelog): Document changes to the code, including what was changed, who made the change, and when.
