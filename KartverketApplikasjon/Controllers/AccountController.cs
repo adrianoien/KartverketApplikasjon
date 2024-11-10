@@ -23,9 +23,12 @@ namespace KartverketApplikasjon.Controllers
             return View(new RegisterViewModel());
         }
 
+
+        // Handles user registration
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
+            // Check if the model data is valid
             if (ModelState.IsValid)
             {
                 var user = await _userService.RegisterUserAsync(model);
@@ -61,7 +64,7 @@ namespace KartverketApplikasjon.Controllers
             return View();
         }
 
-        
+        // Signs the user out
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
@@ -69,6 +72,7 @@ namespace KartverketApplikasjon.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        // Handles user login
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
@@ -98,7 +102,7 @@ namespace KartverketApplikasjon.Controllers
 
                     return RedirectToAction("Index", "Home");
                 }
-                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                ModelState.AddModelError(string.Empty, "Ugyldig forsøk på å logge inn");
             }
             return View(model);
         }

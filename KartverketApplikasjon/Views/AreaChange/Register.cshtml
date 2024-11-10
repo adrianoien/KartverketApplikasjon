@@ -78,7 +78,7 @@
             </div>
         </div>
     </div>
-
+  
 <style>
     .layout {
         display: flex;
@@ -103,6 +103,36 @@
         overflow-y: auto;
     }
 </style>
+<style>
+    .type-button {
+        border: 2px solid #dee2e6;
+        border-radius: 8px;
+        transition: all 0.2s;
+        cursor: pointer !important;
+        position: relative;
+        z-index: 10;
+    }
+
+        .type-button:hover {
+            border-color: #bfdbfe;
+            background-color: #f8fafc;
+            transform: translateY(-1px);
+        }
+
+        .type-button.active {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+        }
+
+        .type-button ul {
+            list-style-type: disc;
+            pointer-events: none;
+        }
+
+        .type-button small {
+            pointer-events: none;
+        }
+</style>
 
 @section Scripts {
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -110,36 +140,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
 
-    <style>
-        .type-button {
-            border: 2px solid #dee2e6;
-            border-radius: 8px;
-            transition: all 0.2s;
-            cursor: pointer !important;
-            position: relative;
-            z-index: 10;
-        }
-
-            .type-button:hover {
-                border-color: #bfdbfe;
-                background-color: #f8fafc;
-                transform: translateY(-1px);
-            }
-
-            .type-button.active {
-                border-color: #3b82f6;
-                background-color: #eff6ff;
-            }
-
-            .type-button ul {
-                list-style-type: disc;
-                pointer-events: none;
-            }
-
-            .type-button small {
-                pointer-events: none;
-            }
-    </style>
+    
 
     <script>
         let map, drawnItems, drawControl;

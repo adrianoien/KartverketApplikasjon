@@ -138,12 +138,15 @@ public class CorrectionManagementController : Controller
     [HttpPost]
     public async Task<IActionResult> Review(int id, string type, CorrectionStatus status, string reviewComment)
     {
+        // Check if the review type is "map"
         if (type == "map")
         {
+            // Retrieve the map correction by ID from the database
             var correction = await _context.MapCorrections.FindAsync(id);
             if (correction == null)
                 return NotFound();
 
+            // Update map correction details: status, review comment, reviewer name, and review date
             correction.Status = status;
             correction.ReviewComment = reviewComment;
             correction.ReviewedBy = User.Identity.Name;
@@ -155,6 +158,7 @@ public class CorrectionManagementController : Controller
             if (areaChange == null)
                 return NotFound();
 
+            // Update area change details: status, review comment, reviewer name, and review date
             areaChange.Status = status;
             areaChange.ReviewComment = reviewComment;
             areaChange.ReviewedBy = User.Identity.Name;
@@ -235,17 +239,19 @@ public class CorrectionManagementController : Controller
     {
         try
         {
+            // Search for users with the role 'Saksbehandler' whose name or email contains the search term
             var saksbehandlere = await _context.Users
                 .Where(u => u.Role == UserRole.Saksbehandler &&
                            (u.Name.Contains(term) || u.Email.Contains(term)))
                   .Select(u => new { name = u.Name, username = u.Name, email = u.Email })
                 .ToListAsync();
 
+            // Return the search results as JSON
             return Json(saksbehandlere);
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error searching for saksbehandlere: {ex.Message}");
+            _logger.LogError($"En feil oppsto ved søk av saksbehandlere: {ex.Message}");
             return Json(new List<object>());
         }
     }
@@ -257,9 +263,11 @@ public class CorrectionManagementController : Controller
         {
             if (model.CorrectionType == "map")
             {
+                // Find the map correction by ID
                 var correction = await _context.MapCorrections.FindAsync(model.CorrectionId);
                 if (correction != null)
                 {
+                    // Assign the case to the specified user and update the assignment details
                     correction.AssignedTo = model.AssignTo;
                     correction.AssignmentDate = DateTime.UtcNow;
                     correction.AssignmentStatus = AssignmentStatus.Assigned;
@@ -270,13 +278,16 @@ public class CorrectionManagementController : Controller
                 var areaChange = await _context.GeoChanges.FindAsync(model.CorrectionId);
                 if (areaChange != null)
                 {
+                    // Assign the case to the specified user and update the assignment details
                     areaChange.AssignedTo = model.AssignTo;
                     areaChange.AssignmentDate = DateTime.UtcNow;
                     areaChange.AssignmentStatus = AssignmentStatus.Assigned;
                 }
             }
-
+            // Save the changes to the database
             await _context.SaveChangesAsync();
+
+            // Return a success message as JSON
             return Json(new { success = true });
         }
         catch (Exception ex)

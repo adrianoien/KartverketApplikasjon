@@ -1,5 +1,5 @@
 using KartverketApplikasjon.Models;
-
+// Enum with the sole purpose of translating the other enums
 public static class EnumExtensions
 {
     public static string ToNorwegian(this CorrectionStatus status)
