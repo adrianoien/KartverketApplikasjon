@@ -110,11 +110,11 @@ Klikk på en sak for å behandle den
 🛠 Teknisk oversikt
 Bygget med
 
-ASP.NET Core MVC
-Entity Framework Core
-Leaflet.js for kart
-Bootstrap for UI
-MariaDB for database
+- ASP.NET Core MVC
+- Entity Framework Core
+- Leaflet.js for kart
+- Bootstrap for UI
+- MariaDB for database
 
 
 👥 Bidra til prosjektet
