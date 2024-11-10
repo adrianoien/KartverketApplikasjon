@@ -82,6 +82,47 @@ Application Logic: Document specific code functionality. Explain any complex log
 
 Unit Testing and Other Tests: Include test scenarios, code examples, and results. Describe any UI tests or other types of testing used.
 
-Usage Guide: Create a user guide for the application's main functions, aimed at end-users.
+💡 Slik bruker du applikasjonen
+For brukere
+Registrering og innlogging
+
+Gå til applikasjonen
+Klikk "Registrer" for ny bruker
+Fyll ut skjema med brukernavn, e-post og passord
+Velg rolle (Bruker/Saksbehandler)
+
+Melde inn endring
+
+Klikk "Registrer Områdeendring"
+Velg type endring (punkt eller område)
+Marker på kartet
+Fyll ut beskrivelse
+Send inn endring
+
+For saksbehandlere
+Behandle endringer
+
+Logg inn som saksbehandler
+Gå til "Behandle Endringer" → "Dashboard"
+Se oversikt over ventende saker
+Klikk på en sak for å behandle den
+
+🛠 Teknisk oversikt
+Bygget med
+
+ASP.NET Core MVC
+Entity Framework Core
+Leaflet.js for kart
+Bootstrap for UI
+MariaDB for database
+
+
+👥 Bidra til prosjektet
+
+Fork prosjektet
+Lag en feature branch (git checkout -b feature/MinNyeFunksjon)
+Commit endringene (git commit -m 'Lagt til MinNyeFunksjon')
+Push til branch (git push origin feature/MinNyeFunksjon)
+Åpne en Pull Request
 
 Code Changes (Changelog): Document changes to the code, including what was changed, who made the change, and when.
