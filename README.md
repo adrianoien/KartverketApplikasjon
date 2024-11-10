@@ -82,30 +82,29 @@ Application Logic: Document specific code functionality. Explain any complex log
 
 Unit Testing and Other Tests: Include test scenarios, code examples, and results. Describe any UI tests or other types of testing used.
 
+
 ## 💡 Slik bruker du applikasjonen
 For brukere
 Registrering og innlogging
 
-Gå til applikasjonen
-Klikk "Registrer" for ny bruker
-Fyll ut skjema med brukernavn, e-post og passord
-Velg rolle (Bruker/Saksbehandler)
+-- Gå til applikasjonen
+-- Klikk "Registrer" for ny bruker
+-- Fyll ut skjema med brukernavn, e-post og passord
+-- Velg rolle (Bruker/Saksbehandler)
 
-Melde inn endring
+-- Melde inn endring
 
-Klikk "Registrer Områdeendring"
-Velg type endring (punkt eller område)
-Marker på kartet
-Fyll ut beskrivelse
-Send inn endring
+-- Klikk "Registrer Områdeendring"
+-- Velg type endring (punkt eller område)
+-- Marker på kartet
+-- Fyll ut beskrivelse
+-- Send inn endring
 
 ## For saksbehandlere
-Behandle endringer
-
-Logg inn som saksbehandler
-Gå til "Behandle Endringer" → "Dashboard"
-Se oversikt over ventende saker
-Klikk på en sak for å behandle den
+-- Logg inn som saksbehandler
+-- Gå til "Behandle Endringer" → "Dashboard"
+-- Se oversikt over ventende saker
+-- Klikk på en sak for å behandle den
 
 ## 🛠 Teknisk oversikt
 Bygget med
