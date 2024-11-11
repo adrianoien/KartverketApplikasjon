@@ -76,13 +76,6 @@ Model har som jobb å utføre data logikk samt interakte med databaser, View han
 **Behandle endringsforslag**: Saksbehandler kan behandle foreslåtte endringer.   
 <br>
 
-## Andre ting vi må dokumentere:
-
-Application Logic: Document specific code functionality. Explain any complex logic and how it’s implemented.
-
-Unit Testing and Other Tests: Include test scenarios, code examples, and results. Describe any UI tests or other types of testing used.
-
-
 ## 💡 Slik bruker du applikasjonen
 For brukere
 Registrering og innlogging
@@ -105,6 +98,7 @@ Registrering og innlogging
 - Gå til "Behandle Endringer" → "Dashboard"
 - Se oversikt over ventende saker
 -  Klikk på en sak for å behandle den
+<br>
 
 ## 🛠 Teknisk oversikt
 Bygget med
@@ -114,7 +108,7 @@ Bygget med
 - Leaflet.js for kart
 - Bootstrap for UI
 - MariaDB for database
-
+<br>
 
 ## 👥 Dette er et åpent-kilde prosjekt, som betyr at hvem som helst kan bidra, inkludert deg!
 
@@ -123,5 +117,12 @@ Bygget med
 - Commit endringene (git commit -m 'Lagt til MinNyeFunksjon')
 - Push til branch (git push origin feature/MinNyeFunksjon)
 - Åpne en Pull Request
+<br>
+
+## Andre ting vi må dokumentere:
+
+Application Logic: Document specific code functionality. Explain any complex logic and how it’s implemented.
+
+Unit Testing and Other Tests: Include test scenarios, code examples, and results. Describe any UI tests or other types of testing used.
 
 Code Changes (Changelog): Document changes to the code, including what was changed, who made the change, and when.
