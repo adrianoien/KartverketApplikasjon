@@ -101,5 +101,6 @@ namespace KartverketApplikasjon.Controllers
             // Pass an ErrorViewModel to the view with the current request ID (for tracking the error)
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
     }
 }

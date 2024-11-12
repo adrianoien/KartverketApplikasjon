@@ -3,7 +3,7 @@
 }
 
 <!-- The map container div -->
-<div id="map" style="height: 100vh;"></div>
+<div id="map" style="height: 90vh;"></div>
 
 @section Scripts {
     <!-- Leaflet CSS -->
@@ -18,10 +18,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
 
-    
     <script>
         // Initialize the map and set its view to a default location (Oslo)
-        // Karter initialiserer først til default location og deretter til b
         var map = L.map('map').setView([59.9139, 10.7522], 13);
 
         // OpenStreetMap layer
@@ -29,7 +27,7 @@
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        // Går til bruker med geolokalisering
+        // Geolocation to set the map's view to the user's current location
         navigator.geolocation.getCurrentPosition(function (position) {
             var lat = position.coords.latitude;
             var lon = position.coords.longitude;
@@ -41,18 +39,6 @@
             L.marker([lat, lon]).addTo(map)
                 .bindPopup('Du er her!').openPopup();
 
-            // Create a FeatureGroup to store drawn items
-            var drawnItems = new L.FeatureGroup();
-            map.addLayer(drawnItems);
-
-            // Add draw control to the map
-            var drawControl = new L.Control.Draw({
-                edit: {
-                    featureGroup: drawnItems
-                }
-            });
-            map.addControl(drawControl);
-
             // GeoJSON Data
             fetch('@Url.Action("GetGeoJsonData", "Home")')
                 .then(response => response.json())
@@ -60,29 +46,6 @@
                     L.geoJSON(geojsonData).addTo(map);
                 })
                 .catch(error => console.error('Error loading GeoJSON data:', error));
-
-            // Handle event when a new shape is created
-            map.on(L.Draw.Event.CREATED, function (e) {
-                var layer = e.layer;
-                drawnItems.addLayer(layer);
-
-                var geojsonData = layer.toGeoJSON();
-
-                // Send the new GeoJSON data to the server
-                fetch('@Url.Action("SaveGeoJsonData", "Home")', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(geojsonData)
-                }).then(response => {
-                    if (response.ok) {
-                        alert('GeoJSON saved successfully!');
-                    } else {
-                        alert('Error saving GeoJSON');
-                    }
-                }).catch(error => console.error('Error:', error));
-            });
         }, function (error) {
             console.error('Geolocation failed: ', error);
         });
