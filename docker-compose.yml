@@ -21,7 +21,7 @@ services:
       context: .
       dockerfile: KartverketApplikasjon/Dockerfile
     ports:
-      - "5000:80"
+      - "5001:8081"
     depends_on:
       - mariadb
     environment:
