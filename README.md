@@ -125,4 +125,8 @@ Application Logic: Document specific code functionality. Explain any complex log
 
 Unit Testing and Other Tests: Include test scenarios, code examples, and results. Describe any UI tests or other types of testing used.
 
-Code Changes (Changelog): Document changes to the code, including what was changed, who made the change, and when.
+
+## Application Logic: Document specific code functionality. Explain any complex logic and how it’s implemented.
+Starter vi fra toppen av mappestrukturen så har vi kontrollere, som forlart over kobler sammen views og models. I kontroller klassen har vi 4 kontroller.cs filer, disse er satt opp som public class kontrollere som betyr at klassene er tilgjenlige for klienter/ webserveren. Vær kontroller har en rolle som den gjør, Account kontroller lar brukere lage kontoer i webapplikasjonen. Areachange kontroller lar brukere utføre område endringer, den har også som funksjon og validere data og lagre dette i en database. Hvis den finner feil så har den muligheten til å catche disse feilene og oppretter en loggmelding.CorrectionManagement har som oppgave og håndtere status på korreksjoner, se en detalgjert beskrivelse av disse korekksjonene, søke etter brukere som har rollen saksbehandler og lagre endringer til databasen. Home kontroller har som oppgave å redirekte autoriserte brukere til area change siden, gi brukerne et overbblikk over mappe korreksjoner, og hente ventede korreksjoner sortert med innsendings dato senest først. Home kontroller gjør at den en autorisert bruker kan se alle innsendingene av den inlogde brukeren. Home kontroller kan også hente kart korreksjoner, kart endringer og kan kombinere disse i en view model. Den kan også vise error sider. 
+
+## Code Changes (Changelog): Document changes to the code, including what was changed, who made the change, and when.
