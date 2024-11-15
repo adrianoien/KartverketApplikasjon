@@ -41,6 +41,8 @@
     <Content Remove="C:\Users\pkn18\.nuget\packages\bootstrap\5.3.3\contentFiles\any\any\wwwroot\css\bootstrap.rtl.css.map" />
     <Content Remove="C:\Users\pkn18\.nuget\packages\bootstrap\5.3.3\contentFiles\any\any\wwwroot\css\bootstrap.rtl.min.css" />
     <Content Remove="C:\Users\pkn18\.nuget\packages\bootstrap\5.3.3\contentFiles\any\any\wwwroot\css\bootstrap.rtl.min.css.map" />
+    <Content Remove="wwwroot\css\darkmode.css" />
+    <Content Remove="wwwroot\js\darkmode.js" />
   </ItemGroup>
 
   <ItemGroup>
