@@ -3,6 +3,7 @@ using KartverketApplikasjon.Models;
 
 namespace KartverketApplikasjon.Data
 {
+ // Represents a geographical change submitted by a user, including details such as GeoJSON data, description, status, review information, assignment details, and priority.
     public class GeoChange
     {
         public int Id { get; set; }
