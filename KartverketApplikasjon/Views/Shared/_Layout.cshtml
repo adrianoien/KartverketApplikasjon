@@ -1,40 +1,29 @@
-﻿@using Microsoft.AspNetCore.Identity
+﻿﻿@using Microsoft.AspNetCore.Identity
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - KartverketApplikasjon</title>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/KartverketApplikasjon.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/mycsstheme.css" />
     <link rel="stylesheet" href="~/css/index.css" asp-append-version="true" />
+
     <link rel="stylesheet" href="~/css/modal.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/navbar.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/assignment.css" asp-append-version="true" />
     <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
           integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-
-    <style>
-        /* Basic font scaling */
-        body {
-            font-size: 1rem;
-        }
-        @media (min-width: 1200px) {
-            body {
-                font-size: 1.25rem;
-            }
-        }
-    </style>
 </head>
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-light bg-white">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
-                    <img src="~/images/logo-kartverket-liggende1.png" alt="Kartverket Logo" class="img-fluid">
+                    <img src="~/images/logo-kartverket-liggende1.png" alt="Kartverket Logo">
                 </a>
 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
@@ -129,18 +118,22 @@
         </nav>
     </header>
 
-    <main role="main" class="container-fluid py-3">
+    <main role="main">
         @RenderBody()
     </main>
 
-    <footer class="border-top footer text-muted py-3">
-        <div class="container text-center">
+    <footer class="border-top footer text-muted">
+
+        <!--
+         <div class="container">
             &copy; 2024 - KartverketApplikasjon - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
+        </div> -->
+
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/js/bootstrap.js"></script>
+    <!-- <script src="~/js/site.js" asp-append-version="true"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
             integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
@@ -155,7 +148,7 @@
                     if (!document.querySelector('form[action*="Logout"]')) {
                         e.preventDefault();
                         alert('Du må logge inn eller registrere deg før du kan sende inn endringer.');
-                        window.location.href = this.href;
+                        window.location.href = this.href; // This will use the login URL with the return URL parameter
                     }
                 });
             }
