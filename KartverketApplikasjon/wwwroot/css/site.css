@@ -88,3 +88,50 @@ body {
         #searchResults div:hover {
             background-color: #f0f0f0;
         }
+<html >
+
+<body >
+
+<div id = "container" >
+<div id="advertisement" >
+<img src="Desert.jpg" width="200px" height="200px" >
+</div >
+<div id="transparent" >
+<img src="black.jpg" width="200px" height="200px" >
+
+</div >
+<div id="regularborder" >
+<img src="Desert.jpg" width="200px" height="200px" >
+<img src="Desert.jpg" width="200px" height="200px" >
+<img src="Desert.jpg" width="200px" height="200px" >
+</div >
+</div >
+
+
+
+</body >
+</html >
+<style >
+#container {
+    position: relative;
+}
+
+
+#advertisement {
+    z-index: -1;
+    border-left: solid;
+}
+
+#transparent {
+    opacity: 0.4;
+    filter: alpha(opacity=40);
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}
+
+#regularborder {
+    border-style: solid;
+}
+
+</style >
