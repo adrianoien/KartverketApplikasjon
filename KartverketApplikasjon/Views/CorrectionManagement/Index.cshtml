@@ -27,6 +27,10 @@
                class="btn @(ViewBag.CurrentFilter == "Avvist" ? "btn-success" : "btn-outline-success")">
                 AVVIST
             </a>
+            <a asp-action="Index" asp-route-status="Commune"
+               class="btn @(ViewBag.CurrentFilter == "Kommune" ? "btn-success" : "btn-outline-success")">
+                KOMMUNE
+            </a>
             <a asp-action="Index" asp-route-status="All"
                class="btn @(ViewBag.CurrentFilter == "Alle" ? "btn-success" : "btn-outline-success")">
                 ALLE
