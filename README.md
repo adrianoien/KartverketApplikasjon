@@ -39,7 +39,7 @@ Nå skal applikasjonen være koblet til databasen
 <br>
 
 **Steg 2.5 (Hvis nødvendig) - Koble til MariaDB i MySQL Client**  
-*exec -it mariadb mariadb -u root geochangesdb -p*
+* docker exec -it mariadb mariadb -u root geochangesdb -p*
 
 Enkle kommandoer for å se om den er koblet til:
 
