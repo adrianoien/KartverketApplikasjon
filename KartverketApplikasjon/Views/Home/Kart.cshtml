@@ -6,63 +6,13 @@
 <div id="map" style="height: 90vh;"></div>
 
 @section Scripts {
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-
-    <!-- Draw CSS/JS -->
+    <!-- Leaflet API -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
-
-    <!-- Search function -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
-    
-    <script>
-        // Initialize the map and set its view to a default location (Oslo)
-        var map = L.map('map').setView([59.9139, 10.7522], 13);
-
-        // OpenStreetMap layer
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
-
-        
-
-        // Geolocation to set the map's view to the user's current location
-        navigator.geolocation.getCurrentPosition(function (position) {
-            var lat = position.coords.latitude;
-            var lon = position.coords.longitude;
-
-            // Set the map's view to user's current location
-            map.setView([lat, lon], 13);
-
-            // Add a marker at the user's current location
-            L.marker([lat, lon]).addTo(map)
-                .bindPopup('Du er her!').openPopup();
-
-            // GeoJSON Data
-            fetch('@Url.Action("GetGeoJsonData", "Home")')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(geojsonData => {
-                    L.geoJSON(geojsonData).addTo(map);
-                })
-                .catch(error => console.error('Error loading GeoJSON data:', error));
-        }, function (error) {
-            console.error('Geolocation failed: ', error);
-        });
-   
-        L.Control.geocoder().addTo(map);
-    </script>
-// Sjøkart JavaScript
-<script src="~/js/seaMapControls.js"></script>
+    <!-- Map functionality -->
+    <script src="~/js/overview-map-functions.js"></script>
 }

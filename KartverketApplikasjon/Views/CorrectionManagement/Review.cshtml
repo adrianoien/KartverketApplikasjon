@@ -88,151 +88,16 @@
     <!-- Inkluder nødvendige Leaflet-filer -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
+    <!-- Definerer modell verdier for bruk i JS -->
     <script>
-        console.log('Model Type:', '@Model.Type');
-        console.log('Current Working URL:', window.location.href);
-        // Sjekk om kartet allerede eksisterer
-        if (typeof map === 'undefined') {
-            // Hvis ikke, initialiser et nytt kart
-            var map = L.map('map').setView([62.0, 10.0], 4);
-
-            // Bruk Kartverkets tile layer
-            L.tileLayer('https://cache.kartverket.no/v1/wmts/1.0.0/topo/default/webmercator/{z}/{y}/{x}.png', {
-                attribution: 'Map data © Kartverket',
-                maxZoom: 18,
-                minZoom: 3
-            }).addTo(map);
-        } else {
-            console.log("Kartet er allerede initialisert.");
-        }
-
-        // Funksjon for å style GeoJSON
-        function styleGeoJson() {
-            return {
-                color: '#FF4444',
-                weight: 3,
-                opacity: 0.7,
-                fillOpacity: 0.3
-            };
-        }
-
-        @if (Model.Type == "map")
-        {
-            <text>
-                    (function () {
-                            // Standardkoordinater for Norge dersom ingen er angitt
-                            var defaultLat = 62.0;
-                    var defaultLng = 10.0;
-
-                    // Hent koordinater fra modellen
-                    var lat = '@Model.Latitude';
-                    var lng = '@Model.Longitude';
-
-                    console.log('Råkoordinater:', {lat, lng});
-
-                    // Parse koordinater, bruk standard hvis ugyldig
-                    lat = !isNaN(parseFloat(lat)) ? parseFloat(lat) : defaultLat;
-                    lng = !isNaN(parseFloat(lng)) ? parseFloat(lng) : defaultLng;
-
-                    console.log('Parsed koordinater:', {lat, lng});
-
-                    map.whenReady(function () {
-                        console.log('Setter kartvisning til:', { lat, lng });
-                    map.setView([lat, lng], 15);  // Set zoom level to 15 for better view
-
-                    if (lat !== defaultLat || lng !== defaultLng) {
-                        L.marker([lat, lng])
-                            .addTo(map)
-                            .bindPopup(@Html.Raw(Json.Serialize(Model.Description)))
-                            .openPopup();
-                                }
-
-                    // Hent kommuneinformasjon
-                    if (lat !== defaultLat && lng !== defaultLng) {
-                                    const params = new URLSearchParams({
-                        nord: lat.toString(),
-                    ost: lng.toString(),
-                    koordsys: '4326'
-                                    });
-
-                    const apiUrl = `https://api.kartverket.no/kommuneinfo/v1/punkt?${params.toString()}`;
-                    console.log('Henter kommuneinformasjon fra:', apiUrl);
-
-                    fetch(apiUrl)
-                                        .then(response => {
-                        console.log('Kommune API-respons:', response.status);
-                    if (!response.ok) {
-                                                throw new Error(`HTTP-feil! status: ${response.status}`);
-                                            }
-                    return response.json();
-                                        })
-                                        .then(data => {
-                        console.log('Kommuneinformasjon:', data);
-                    document.getElementById('municipality').textContent =
-                    data && data.kommunenavn ? data.kommunenavn : 'Ikke funnet';
-                                        })
-                    .catch(function (error) {
-                        console.error('Feil ved henting av kommune:', error);
-                    document.getElementById('municipality').textContent =
-                    'Kunne ikke bestemme kommune';
-                                        });
-                                } else {
-                        document.getElementById('municipality').textContent = 'Ingen lokasjon spesifisert';
-                                }
-                            });
-                        })();
-            </text>
-        }
-        else if (Model.Type == "area")
-        {
-            <text>
-                    try {
-                            // Parse og vis GeoJSON-data
-                            var geoJsonData = @Html.Raw(Model.GeoJson);
-                    console.log('GeoJSON-data:', geoJsonData);
-
-                    // Legg til GeoJSON-laget med styling
-                    var geoJsonLayer = L.geoJSON(geoJsonData, {
-                        style: styleGeoJson,
-                    onEachFeature: function(feature, layer) {
-                        layer.bindPopup(@Html.Raw(Json.Serialize(Model.Description)));
-                                }
-                            }).addTo(map);
-
-                    // Tilpass kartet til å vise hele området
-                    var bounds = geoJsonLayer.getBounds();
-                    map.fitBounds(bounds, {
-                        padding: [50, 50] // Legg til padding rundt området
-                            });
-
-                    // Hent kommuneinformasjon for senterpunktet av området
-                    var center = bounds.getCenter();
-                    const params = new URLSearchParams({
-                        nord: center.lat.toString(),
-                    ost: center.lng.toString(),
-                    koordsys: '4326'
-                            });
-
-                    fetch(`https://api.kartverket.no/kommuneinfo/v1/punkt?${params.toString()}`)
-                                .then(response => response.json())
-                                .then(data => {
-                        document.getElementById('municipality').textContent =
-                        data && data.kommunenavn ? data.kommunenavn : 'Ikke funnet';
-                                })
-                                .catch(error => {
-                        console.error('Feil ved henting av kommune:', error);
-                    document.getElementById('municipality').textContent = 'Kunne ikke bestemme kommune';
-                                });
-                        } catch (error) {
-                        console.error('Feil ved visning av GeoJSON:', error);
-                    console.error('GeoJSON-data:', @Html.Raw(Json.Serialize(Model.GeoJson)));
-                    map.setView([59.9139, 10.7522], 4); // Standard visning av Oslo
-                    document.getElementById('municipality').textContent = 'Feil ved visning av område';
-                        }
-            </text>
-        }
+        const mapModelData = {
+            type: "@Model.Type",
+            latitude: @(Model.Latitude != null ? Model.Latitude : "null"),
+            longitude: @(Model.Longitude != null ? Model.Longitude : "null"),
+            description: @Html.Raw(Json.Serialize(Model.Description != null ? Model.Description : "No description")),
+            geoJson: @Html.Raw(Model.GeoJson != null ? Model.GeoJson : "null")
+        };
     </script>
-// Sjøkart JavaScript
-<script src="~/js/seaMapControls.js"></script>
+    <!-- Inkluderer JS for kart funksjonalitet -->
+    <script src="~/js/review-map-functions.js"></script>
 }
