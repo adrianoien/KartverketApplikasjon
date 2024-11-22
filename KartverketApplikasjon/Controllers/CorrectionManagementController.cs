@@ -138,6 +138,10 @@ public class CorrectionManagementController : Controller
     [HttpPost]
     public async Task<IActionResult> Review(int id, string type, CorrectionStatus status, string reviewComment)
     {
+        if (User?.Identity?.Name == null)
+        {
+            return Unauthorized();
+        }
         // Check if the review type is "map"
         if (type == "map")
         {
@@ -175,7 +179,7 @@ public class CorrectionManagementController : Controller
         {
             _logger.LogError(ex, "Error updating correction status");
             ModelState.AddModelError("", "An error occurred while updating the correction.");
-            return View();
+            throw;
         }
     }
 
