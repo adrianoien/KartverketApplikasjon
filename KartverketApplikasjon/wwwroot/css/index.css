@@ -1,4 +1,26 @@
-﻿/* Base styles */
+/* Base styles */
+/* Lys modus - standard modus */
+:root {
+    --background-color: white;
+    --text-color: black;
+    --modal-background: rgba(255, 255, 255, 0.9); /* Lys bakgrunn for modaler */
+    --modal-text-color: black; /* Lys tekst */
+    --navbar-bg: #f8f9fa; /* Lys navbar bakgrunn */
+    --navbar-text-color: black; /* Lys tekst for navbar */
+    --navbar-link-hover-color: #0066cc; /* Hoverfarge for lenker */
+}
+
+/* Mørk modus */
+[data-theme="dark"] {
+    --background-color: #121212; /* Mørk bakgrunn for hele siden */
+    --text-color: #e0e0e0; /* Lys tekst for mørk modus */
+    --modal-background: #333; /* Mørk bakgrunn for modaler */
+    --modal-text-color: #ffffff; /* Lys tekst for modal i mørk modus */
+    --navbar-bg: #343a40; /* Mørk navbar bakgrunn */
+    --navbar-text-color: white; /* Lys tekst i navbar */
+    --navbar-link-hover-color: #1e90ff; /* Lysere hoverfarge for lenker i mørk modus */
+}
+
 body, html {
     height: 100%;
     margin: 0;
