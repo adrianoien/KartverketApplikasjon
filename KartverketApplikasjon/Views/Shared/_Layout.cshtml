@@ -1,7 +1,7 @@
-﻿﻿@using Microsoft.AspNetCore.Identity
+﻿@using Microsoft.AspNetCore.Identity
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -112,6 +112,7 @@
                             <a class="btn btn-primary btn-sm" asp-controller="Account" asp-action="Login">Logg inn</a>
                             <a class="btn btn-primary btn-sm" asp-controller="Account" asp-action="Register">Registrer</a>
                         }
+                        <button id="theme-toggle" class="btn btn-outline-secondary">Dark Mode</button>
                     </div>
                 </div>
             </div>
@@ -154,5 +155,33 @@
             }
         });
     </script>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="styles.css">
+        <title>Mørk modus eksemple</title>
+    </head>
+    <body>
+        
+
+     
+
+        <script>
+            const toggleButton = document.getElementById('theme-toggle');
+            const currentTheme = localStorage.getItem("theme") || "light";
+            document.documentElement.setAttribute("data-theme", currentTheme);
+
+            toggleButton.textContent = currentTheme === "dark" ? "Bytt til lysmodus" : "Bytt til mørkmodus";
+
+            toggleButton.addEventListener("click", () => {
+                const newTheme = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+                document.documentElement.setAttribute("data-theme", newTheme);
+                localStorage.setItem("theme", newTheme);
+                toggleButton.textContent = newTheme === "dark" ? "Bytt til lysmodus" : "Bytt til mørkmodus";
+            });
+        </script>
+    </body>
+</html>
+
 </body>
 </html>
