@@ -152,6 +152,14 @@ function selectChangeType(type) {
     document.getElementById('latitudeInput').value = '';
     document.getElementById('longitudeInput').value = '';
 
+    // Informs user of their decision
+    if (type === 'point') {
+        alert("Du har nå valgt Punktkorreksjon!");
+    }
+    else if (type === 'area') {
+        alert("Du har nå valgt Områdeendring!");
+    }
+
     // Configure draw control based on type
     if (type === 'point') {
         map.removeControl(drawControl);
