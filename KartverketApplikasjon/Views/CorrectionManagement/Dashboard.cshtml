@@ -32,6 +32,115 @@
         </div>
     </div>
 
+    <!-- Plasser dette rett under "OVERSIKT FOR KORRIGERINGER" -->
+    <div class="filter-section mb-4">
+        <h3>Filtrer på kommune</h3>
+        <select id="kommuneFilter" class="form-control" onchange="filterByKommune(this.value)">
+            <option value="">Alle kommuner</option>
+            <option value="4204">Kristiansand</option>
+            <option value="4022">Seljord</option>
+            <option value="4016">Drangedal</option>
+        </select>
+    </div>
+
+    <script>
+        function filterByKommune(kommuneNr) {
+            // Hent alle listeelementer for både punktkorreksjoner og områdeendringer
+            const listItems = document.querySelectorAll('.list-group-item');
+
+            listItems.forEach(item => {
+                // Finn kommune-span i hvert element
+                const kommuneSpan = item.querySelector('[id^="municipality-"], [id^="municipality-area-"]');
+                if (kommuneSpan) {
+                    const kommuneText = kommuneSpan.textContent;
+
+                    // Vis alle hvis ingen kommune er valgt, ellers sjekk om kommunenummer matcher
+                    if (!kommuneNr || kommuneText.includes(kommuneNr)) {
+                        item.style.display = '';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                }
+            });
+
+            // Oppdater tellere
+            updateCounters();
+        }
+
+        function updateCounters() {
+            // Tell synlige saker med "Venter" status
+            const ventendeSaker = document.querySelectorAll('.list-group-item:not([style*="display: none"]) .badge.bg-warning').length;
+
+            // Oppdater VENTENDE GJENNOMGANGER teller
+            const ventendeElement = document.querySelector('.card.bg-dark h2');
+            if (ventendeElement) {
+                ventendeElement.textContent = ventendeSaker;
+            }
+        }
+                    function populateKommuneFilter() {
+            // Finn alle kommune-spans
+            const kommuneElements = document.querySelectorAll('[id^="municipality-"], [id^="municipality-area-"]');
+            const kommuneMap = new Map(); // Bruk Map for å sikre unike verdier
+
+            // Samle alle unike kommuner
+            kommuneElements.forEach(element => {
+                const kommuneText = element.textContent.trim();
+                if (kommuneText && kommuneText !== 'Laster...' && kommuneText !== 'Error') {
+                    const [kommuneNr, ...kommuneNavnDeler] = kommuneText.split(' ');
+                    const kommuneNavn = kommuneNavnDeler.join(' ');
+                    // Bruk kommuneNavn som nøkkel for å unngå duplikater
+                    kommuneMap.set(kommuneNavn, { nummer: kommuneNr, navn: kommuneNavn });
+                }
+            });
+
+            // Oppdater dropdown
+            const kommuneFilter = document.getElementById('kommuneFilter');
+            kommuneFilter.innerHTML = '<option value="">Alle kommuner</option>';
+
+            // Konverter Map til Array, sorter og legg til kommuner
+            [...kommuneMap.values()]
+                .sort((a, b) => a.navn.localeCompare(b.navn))
+                .forEach(kommune => {
+                    const option = document.createElement('option');
+                    option.value = kommune.nummer;
+                    option.textContent = kommune.navn;
+                    kommuneFilter.appendChild(option);
+                });
+        }
+
+        // Kall populateKommuneFilter når kommunedata er lastet
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sjekk hvert sekund om kommunedataene er lastet
+            const checkInterval = setInterval(() => {
+                const loadingElements = document.querySelectorAll('[id^="municipality-"][textContent="Laster..."]');
+                if (loadingElements.length === 0) {
+                    // Alle kommuner er lastet
+                    populateKommuneFilter();
+                    clearInterval(checkInterval);
+                }
+            }, 1000);
+
+            // Stopp sjekking etter 10 sekunder uansett
+            setTimeout(() => clearInterval(checkInterval), 10000);
+        });
+    </script>
+
+
+    <style>
+        .filter-section {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        #kommuneFilter {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
     <div class="row">
         <div class="col-md-8">
             <div class="card">
@@ -61,7 +170,8 @@
                                 })">@correction.Status.ToNorwegian()</span>
                                 </div>
                             }
-                        }
+}
+</style>
 
                         @if (Model.RecentAreaChanges.Any())
                         {

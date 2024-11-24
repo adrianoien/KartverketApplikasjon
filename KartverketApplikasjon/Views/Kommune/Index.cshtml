@@ -1,0 +1,28 @@
+﻿@* Views/Kommune/Index.cshtml *@
+@model IEnumerable<KartverketApplikasjon.Models.Kommune>
+
+<h2>Kommuner</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Kommunenummer</th>
+            <th>Navn</th>
+            <th>Fylke</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var kommune in Model)
+        {
+            <tr>
+                <td>@kommune.KommuneNummer</td>
+                <td>@kommune.KommuneNavn</td>
+                <td>@kommune.Fylke</td>
+                <td>
+                    @Html.ActionLink("Detaljer", "Detaljer", new { kommuneNummer = kommune.KommuneNummer })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

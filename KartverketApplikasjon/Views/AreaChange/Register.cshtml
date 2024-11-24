@@ -7,15 +7,14 @@
         </div>
 
     <div class="sidebar">
-            
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Stedsinformasjon</h5>
-                    <div id="kommuneInfo" class="mb-3">
-                        <!-- Kommune info will be displayed here -->
-                    </div>
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Stedsinformasjon</h5>
+                <div id="kommuneInfo" class="mb-3">
+                    <!-- Kommune info will be displayed here -->
                 </div>
             </div>
+        </div>
 
             <div class="card mb-3">
                 <div class="card-body">
@@ -133,6 +132,35 @@
             pointer-events: none;
         }
 </style>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Hent og populer kommune-dropdown
+        fetch('/Kommune/HentKommuner')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Nettverksfeil ved henting av kommuner');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Mottatte kommuner:', data); // For debugging
+                const select = document.getElementById('kommuneSelect');
+                if (select) {
+                    data.forEach(kommune => {
+                        const option = document.createElement('option');
+                        option.value = kommune.kommuneNummer;
+                        option.textContent = kommune.kommuneNavn;
+                        select.appendChild(option);
+                    });
+                } else {
+                    console.error('Fant ikke kommuneSelect elementet');
+                }
+            })
+            .catch(error => {
+                console.error('Feil ved henting av kommuner:', error);
+            });
+    });
+</script>
 
 @section Scripts {
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -141,3 +169,4 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
     <script src="~/js/map-functions.js"></script>
 }
+
