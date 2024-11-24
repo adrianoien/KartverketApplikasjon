@@ -33,24 +33,32 @@ namespace KartverketApplikasjon.Controllers
                     {
                         _context.MapCorrections.Remove(correction);
                         await _context.SaveChangesAsync();
-
-                        return Json(new
-                        {
-                            success = true,
-                            latitude = correction.Latitude,
-                            longitude = correction.Longitude
-                        });
+                        return Json(new { success = true });
                     }
-                    return Json(new { success = false, message = "Markør ikke funnet" });
                 }
+                else if (type == "area")
+                {
+                    var areaChange = await _context.GeoChanges
+                        .FirstOrDefaultAsync(c => c.Id == id && c.SubmittedBy == User.Identity.Name);
+
 
                 // Adds to this default return statement
                 return Json(new { success = false, message = "Ugyldig type" });
+
+                    if (areaChange != null)
+                    {
+                        _context.GeoChanges.Remove(areaChange);
+                        await _context.SaveChangesAsync();
+                        return Json(new { success = true });
+                    }
+                }
+                return Json(new { success = false, message = "Ugyldig type" });
+
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Error deleting correction: {ex.Message}");
-                return Json(new { success = false, message = "En feil oppstod ved sletting av markøren" });
+                return Json(new { success = false, message = "En feil oppstod ved sletting av innmeldingen" });
             }
         }
 

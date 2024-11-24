@@ -1,6 +1,8 @@
 ﻿@model KartverketApplikasjon.Models.UnifiedMapViewModel
 <div class="container">
     <h2>Mine innmeldinger</h2>
+
+    <!-- Punktkorreksoner -->
     <div class="row mb-4">
         <div class="col">
             <h3>Punktkorreksjoner</h3>
@@ -8,7 +10,7 @@
             {
                 <div class="card mb-3" id="correction-@submission.Id">
                     <div class="card-body">
-                        <h5 class="card-title">Punktkorreksjoner</h5>
+                        <h5 class="card-title">Punktkorreksjon</h5>
                         <div class="mb-2">
                             <span class="badge bg-@(submission.Status switch {
                                 CorrectionStatus.Pending => "warning",
@@ -17,9 +19,8 @@
                                 _ => "secondary"
                             })">@submission.Status.ToNorwegian()</span>
 
-                            <!-- Slett-knapp -->
                             <button class="btn btn-danger btn-sm float-end"
-                                    onclick="deleteCorrection(@submission.Id)">
+                                    onclick="deleteCorrection(@submission.Id, 'point')">
                                 Slett
                             </button>
                         </div>
@@ -38,20 +39,62 @@
             }
         </div>
     </div>
+
+    <!-- Områdekorreksjoner -->
+    <div class="row mb-4">
+        <div class="col">
+            <h3>Områdeendringer</h3>
+            @if (Model.Changes.Any())
+            {
+                @foreach (var change in Model.Changes)
+                {
+                    <div class="card mb-3" id="area-@change.Id">
+                        <div class="card-body">
+                            <h5 class="card-title">Områdeendring</h5>
+                            <div class="mb-2">
+                                <span class="badge bg-@(change.Status switch {
+                                    CorrectionStatus.Pending => "warning",
+                                    CorrectionStatus.Approved => "success",
+                                    CorrectionStatus.Rejected => "danger",
+                                    _ => "secondary"
+                                })">@change.Status.ToNorwegian()</span>
+
+                                <button class="btn btn-danger btn-sm float-end"
+                                        onclick="deleteCorrection(@change.Id, 'area')">
+                                    Slett
+                                </button>
+                            </div>
+                            <p class="card-text">@change.Description</p>
+                            <p class="card-text"><small class="text-muted">Sendt inn: @change.SubmittedDate.ToString("g")</small></p>
+                            @if (!string.IsNullOrEmpty(change.ReviewComment))
+                            {
+                                <div class="alert alert-info">
+                                    <strong>Tilbakemelding:</strong><br />
+                                    @change.ReviewComment
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p>Ingen områdeendringer er registrert.</p>
+            }
+        </div>
+    </div>
 </div>
 
 <script>
-    async function deleteCorrection(id) {
+    async function deleteCorrection(id, type) {
         if (confirm('Er du sikker på at du vil slette denne innmeldingen?')) {
             try {
-                const response = await fetch(`/Home/DeleteCorrection?id=${id}&type=point`, {
+                const response = await fetch(`/Home/DeleteCorrection?id=${id}&type=${type}`, {
                     method: 'POST'
                 });
                 if (response.ok) {
-                    // Fjern elementet fra siden
-                    document.getElementById(`correction-${id}`).remove();
-                    // Oppdater siden for å oppdatere kartet
-                    location.reload();
+                    const elementId = type === 'point' ? `correction-${id}` : `area-${id}`;
+                    document.getElementById(elementId).remove();
                 } else {
                     alert('Kunne ikke slette innmeldingen');
                 }
