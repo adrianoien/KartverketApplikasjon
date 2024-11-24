@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Add a marker at the user's location
         L.marker([lat, lon]).addTo(map)
-            .bindPopup('Din Posisjon').openPopup();
+            .bindPopup('Din Posisjon!').openPopup();
     }, function (error) {
         console.error('Geolocation failed: ', error);
     });
