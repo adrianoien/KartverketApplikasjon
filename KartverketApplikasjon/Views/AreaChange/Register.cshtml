@@ -134,7 +134,7 @@
 </style>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Hent og populer kommune-dropdown
+        // Gets and populates kommune-dropdown
         fetch('/Kommune/HentKommuner')
             .then(response => {
                 if (!response.ok) {

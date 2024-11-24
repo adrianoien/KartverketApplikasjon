@@ -85,10 +85,10 @@
 </div>
 
 @section Scripts {
-    <!-- Inkluder nødvendige Leaflet-filer -->
+    <!-- Includes essential Leaflet-filer -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <!-- Definerer modell verdier for bruk i JS -->
+    <!-- Defines model values for use in JS -->
     <script>
         const mapModelData = {
             type: "@Model.Type",
@@ -98,6 +98,6 @@
             geoJson: @Html.Raw(Model.GeoJson != null ? Model.GeoJson : "null")
         };
     </script>
-    <!-- Inkluderer JS for kart funksjonalitet -->
+    <!-- Indludes JS for the map functionalities -->
     <script src="~/js/review-map-functions.js"></script>
 }

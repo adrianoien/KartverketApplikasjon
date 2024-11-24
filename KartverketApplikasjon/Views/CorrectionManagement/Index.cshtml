@@ -262,7 +262,7 @@
 
 @section Scripts {
     <script>
-                    // Oppdater den eksisterende fetchMunicipality-funksjonen
+                    // Updates the existing fetchMunicipality-function
         async function fetchMunicipality(lat, lng, elementId) {
             const params = new URLSearchParams({
                 nord: lat.toString(),
@@ -279,7 +279,7 @@
                 const kommuneText = data && data.kommunenavn ? `${data.kommunenummer} ${data.kommunenavn}` : 'Ikke funnet';
                 document.getElementById(elementId).textContent = kommuneText;
 
-                // Kall updateKommuneFilter etter at kommunen er lastet
+                // Calls updateKommuneFilter after kommunen is loaded
                 updateKommuneFilter();
             } catch (error) {
                 console.error('Error fetching municipality:', error);
@@ -302,22 +302,22 @@
 
             const kommuneFilter = document.getElementById('kommuneFilter');
             if (kommuneFilter) {
-                // Behold "Alle kommuner" valget
+                // Keeps "Alle kommuner" chosen
                 kommuneFilter.innerHTML = '<option value="">Alle kommuner</option>';
 
-                // Legg til kommunene sortert på navn
+                // Adds kommunene sorted after name
                 [...kommuneSet]
                     .sort((a, b) => a.navn.localeCompare(b.navn))
                     .forEach(kommune => {
                         const option = document.createElement('option');
-                        option.value = kommune.fulltext; // Behold hele teksten som verdi for filtrering
-                        option.textContent = kommune.navn; // Vis bare navnet i dropdown
+                        option.value = kommune.fulltext; // Keeps the entire text as a value for filterting
+                        option.textContent = kommune.navn; // Shows only the name in dropdown
                         kommuneFilter.appendChild(option);
                     });
             }
         }
 
-        // Legg til denne nye funksjonen for å håndtere filtrering
+        // Adds the new function to handle filtering
         function filterByKommune(selectedKommune) {
             const rows = document.querySelectorAll('tbody tr');
             rows.forEach(row => {
@@ -334,7 +334,7 @@
 
         // Event listeners
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialiser første oppdatering når kommunedataene er lastet
+            // Initializes the first update when kommunedataene is loaded 
             const checkInterval = setInterval(() => {
                 const loadingElements = document.querySelectorAll('td:nth-child(2)');
                 const allLoaded = Array.from(loadingElements).every(el =>
@@ -346,11 +346,11 @@
                 }
             }, 500);
 
-            // Stopp sjekking etter 10 sekunder
+            // Stops checking after 10 seconds 
             setTimeout(() => clearInterval(checkInterval), 10000);
         });
 
-        // Observer for å oppdage endringer i tabellen
+        // Observing to looking for changes in the table
         const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
                 if (mutation.type === 'childList' || mutation.type === 'characterData') {
@@ -359,7 +359,7 @@
             });
         });
 
-        // Start observering av tabellen
+        // Starts observering of the table
         document.querySelector('tbody') && observer.observe(document.querySelector('tbody'), {
             childList: true,
             subtree: true,

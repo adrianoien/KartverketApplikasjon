@@ -44,7 +44,7 @@ namespace KartverketApplikasjon.Controllers
                     return Json(new { success = false, message = "Markør ikke funnet" });
                 }
 
-                // Legg til denne default return statement
+                // Adds to this default return statement
                 return Json(new { success = false, message = "Ugyldig type" });
             }
             catch (Exception ex)
