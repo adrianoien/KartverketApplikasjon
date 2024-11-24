@@ -41,6 +41,10 @@ namespace KartverketApplikasjon.Controllers
                     var areaChange = await _context.GeoChanges
                         .FirstOrDefaultAsync(c => c.Id == id && c.SubmittedBy == User.Identity.Name);
 
+
+                // Adds to this default return statement
+                return Json(new { success = false, message = "Ugyldig type" });
+
                     if (areaChange != null)
                     {
                         _context.GeoChanges.Remove(areaChange);
@@ -48,7 +52,8 @@ namespace KartverketApplikasjon.Controllers
                         return Json(new { success = true });
                     }
                 }
-                return Json(new { success = false, message = "Innmelding ikke funnet" });
+                return Json(new { success = false, message = "Ugyldig type" });
+
             }
             catch (Exception ex)
             {

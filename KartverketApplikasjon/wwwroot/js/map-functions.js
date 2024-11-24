@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
-    // Sjekker om kartlagene allerede er definert
+    // Checks if the maplayers are already defined
     if (typeof standardTileLayer === 'undefined') {
         var standardTileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors'
@@ -63,15 +63,15 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Definerer Leaflet-kontrollen
+    // Defines the Leaflet-Controler
     var SjoKartControl = L.Control.extend({
         options: {
-            position: 'topleft' // Plassering i kartet
+            position: 'topleft' // Placement in the map
         },
         onAdd: function (map) {
             var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
 
-            // Styling for kontrollen
+            // Styling of the controler
             container.style.backgroundColor = 'var(--leaflet-control-bg, white)';
             container.style.width = 'var(--leaflet-control-size, 2.5rem)';
             container.style.height = 'var(--leaflet-control-size, 2.5rem)';
@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function () {
             container.style.fontSize = 'var(--leaflet-control-font-size, 1rem)';
             container.innerHTML = '🌊';
 
-            // Klikkhendelse for å bytte kartlag
+            // Clicking action to change maplayer
             container.onclick = function () {
                 if (map.hasLayer(sjokartTileLayer)) {
                     map.removeLayer(sjokartTileLayer);
@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Legger til kontrollen i kartet
+    // Adds the controler to the map
     map.addControl(new SjoKartControl());
 });
 
@@ -362,14 +362,14 @@ function setupFormListener() {
         });
     }
 }
-// I map-functions.js eller tilsvarende fil hvor du håndterer kartet
+// In map-functions.js or an equivalent that handels the map
 function removeMarker(id) {
-    // Finn markøren basert på ID
+    // Find the marker based on ID
     const marker = markers.find(m => m.id === id);
     if (marker) {
-        // Fjern markøren fra kartet
+        // Removes the marker from the map 
         map.removeLayer(marker);
-        // Fjern markøren fra markers-array
+        // Removes the marker from markers-array
         markers = markers.filter(m => m.id !== id);
     }
 }
