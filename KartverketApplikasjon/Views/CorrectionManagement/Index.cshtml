@@ -33,6 +33,36 @@
         </div>
     </div>
 
+    <div id="assignModal" class="custom-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>Tildel Sak</h5>
+                <span class="close-button">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Velg eller søk etter saksbehandler</label>
+                    <input type="text" id="saksbehandlerSearch" class="form-control mb-2"
+                           placeholder="Søk etter saksbehandler...">
+                    <select id="saksbehandlerSelect" class="form-select" size="6">
+                        @foreach (var handler in ViewBag.Saksbehandlere)
+                        {
+                            <option value="@handler.Email" data-name="@handler.Name.ToLower()">@handler.Name</option>
+                        }
+                    </select>
+                </div>
+                <div id="noResults" class="alert alert-info d-none">
+                    Ingen saksbehandlere funnet
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelAssignment" class="btn btn-secondary">Avbryt</button>
+                <button id="saveAssignment" class="btn btn-primary">Lagre</button>
+            </div>
+        </div>
+    </div>
+
+
     <h3 class="mt-4 mb-3">Punktendringer</h3>
     <div class="table-responsive">
         <table class="table table-striped">
@@ -189,7 +219,25 @@
             <thead>
                 <tr>
                     <th>Beskrivelse</th>
-                    <th>Kommune</th>
+                    <th>
+                        <a asp-action="Index"
+                           asp-route-sortOrder="@ViewData["KommuneSortParm"]"
+                           asp-route-status="@ViewData["CurrentFilter"]">
+                            Kommune
+                            @if (ViewData["CurrentSort"].ToString() == "kommune")
+                            {
+                                <i class="fas fa-sort-up"></i>
+                            }
+                            else if (ViewData["CurrentSort"].ToString() == "kommune_desc")
+                            {
+                                <i class="fas fa-sort-down"></i>
+                            }
+                            else
+                            {
+                                <i class="fas fa-sort"></i>
+                            }
+                        </a>
+                    </th>
                     <th>
                         <a asp-action="Index"
                            asp-route-sortOrder="@ViewData["SubmitterSortParm"]"

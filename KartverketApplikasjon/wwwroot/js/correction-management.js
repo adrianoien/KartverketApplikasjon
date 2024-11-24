@@ -18,6 +18,13 @@ const initializeElements = () => {
 
 // Municipality Functions
 async function fetchMunicipality(lat, lng, elementId) {
+    // Verifiser at koordinatene er gyldige
+    if (!lat || !lng || isNaN(lat) || isNaN(lng)) {
+        console.error('Invalid coordinates:', { lat, lng });
+        document.getElementById(elementId).textContent = 'Ugyldige koordinater';
+        return;
+    }
+
     const params = new URLSearchParams({
         nord: lat.toString(),
         ost: lng.toString(),
