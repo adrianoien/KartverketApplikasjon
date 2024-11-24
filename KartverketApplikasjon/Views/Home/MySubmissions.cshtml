@@ -20,7 +20,7 @@
 })">@submission.Status.ToNorwegian()</span>
                         </div>
                         <p class="card-text">@submission.Description</p>
-                        <p class="card-text"><small>Location: [@submission.Latitude, @submission.Longitude]</small></p>
+                        <p class="card-text"><small>Koordinater: [@submission.Latitude, @submission.Longitude]</small></p>
                         <p class="card-text"><small class="text-muted">Sendt inn: @submission.SubmittedDate.ToString("g")</small></p>
                         @if (!string.IsNullOrEmpty(submission.ReviewComment))
                         {

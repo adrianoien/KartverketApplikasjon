@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using KartverketApplikasjon.Data;
 using KartverketApplikasjon.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using KartverketApplikasjon.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -68,3 +69,7 @@ app.MapControllerRoute(
     defaults: new { controller = "AreaChange" });
 
 app.Run();
+
+// Program.cs
+builder.Services.AddHttpClient<IKommuneService, KommuneService>();
+builder.Services.AddScoped<IKommuneService, KommuneService>();
