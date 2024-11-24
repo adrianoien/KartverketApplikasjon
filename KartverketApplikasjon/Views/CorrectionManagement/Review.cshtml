@@ -4,40 +4,40 @@
 }
 
 <div class="container mt-4">
-    <h2>Review @(Model.Type == "map" ? "Map Correction" : "Area Change")</h2>
+    <h2>Behandle endringer</h2>
 
     <div class="row">
         <div class="col-md-6">
             <div class="card mb-4">
                 <div class="card-body">
-                    <h5 class="card-title">Change Details</h5>
+                    <h5 class="card-title">Detaljer</h5>
                     <dl class="row">
-                        <dt class="col-sm-4">Description</dt>
+                        <dt class="col-sm-4">Beskrivelse</dt>
                         <dd class="col-sm-8">@Model.Description</dd>
 
                         @if (Model.Type == "map")
                         {
-                            <dt class="col-sm-4">Location</dt>
+                            <dt class="col-sm-4">Område</dt>
                             <dd class="col-sm-8">[@Model.Latitude, @Model.Longitude]</dd>
                         }
 
-                        <dt class="col-sm-4">Municipality</dt>
+                        <dt class="col-sm-4">Kommune</dt>
                         <dd class="col-sm-8" id="municipality">Loading...</dd>
 
-                        <dt class="col-sm-4">Submitted By</dt>
+                        <dt class="col-sm-4">Innsender</dt>
                         <dd class="col-sm-8">@Model.SubmittedBy</dd>
 
-                        <dt class="col-sm-4">Submitted Date</dt>
+                        <dt class="col-sm-4">Innsendelses dato</dt>
                         <dd class="col-sm-8">@Model.SubmittedDate.ToString("g")</dd>
 
-                        <dt class="col-sm-4">Current Status</dt>
+                        <dt class="col-sm-4">Foreløpig status</dt>
                         <dd class="col-sm-8">
                             <span class="badge bg-@(Model.Status switch {
                                 CorrectionStatus.Pending => "warning",
                                 CorrectionStatus.Approved => "success",
                                 CorrectionStatus.Rejected => "danger",
                                 _ => "secondary"
-                            })">@Model.Status</span>
+                            })">@Model.Status.ToNorwegian()</span>
                         </dd>
                     </dl>
                 </div>
@@ -45,7 +45,7 @@
 
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Review Decision</h5>
+                    <h5 class="card-title"></h5>
                     <form asp-action="Review" method="post">
                         <input type="hidden" asp-for="Id" />
                         <input type="hidden" name="type" value="@Model.Type" />
@@ -53,20 +53,20 @@
                         <div class="mb-3">
                             <label class="form-label">Status</label>
                             <select name="status" class="form-select" required>
-                                <option value="">Select status...</option>
+                                <option value="">Velg status...</option>
                                 <option value="Approved">Approve</option>
                                 <option value="Rejected">Reject</option>
                             </select>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Review Comment</label>
+                            <label class="form-label">Kommentar for innsendelse</label>
                             <textarea name="reviewComment" class="form-control" rows="3" required></textarea>
                         </div>
 
                         <div class="mb-3">
-                            <button type="submit" class="btn btn-primary">Submit Review</button>
-                            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                            <button type="submit" class="btn btn-primary">Send inn</button>
+                            <a asp-action="Index" class="btn btn-secondary">Tilbake til listen</a>
                         </div>
                     </form>
                 </div>
@@ -76,7 +76,7 @@
         <div class="col-md-6">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Location Map</h5>
+                   
                     <div id="map" style="height: 500px; width: 100%;"></div>
                 </div>
             </div>

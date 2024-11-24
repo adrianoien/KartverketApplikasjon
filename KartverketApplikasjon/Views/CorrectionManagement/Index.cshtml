@@ -130,7 +130,7 @@
                         CorrectionStatus.Rejected => "danger",
                         _ => "secondary"
                     })">
-                                    @item.Status
+                                    @item.Status.ToNorwegian()
                                 </span>
                             </td>
                             <td style="text-align: left; width: 150px;">
@@ -211,7 +211,7 @@
                                     CorrectionStatus.Rejected => "danger",
                                     _ => "secondary"
                                 })">
-                                    @item.Status
+                                    @item.Status.ToNorwegian()
                                 </span>
                             </td>
                             
