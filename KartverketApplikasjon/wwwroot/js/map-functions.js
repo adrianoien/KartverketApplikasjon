@@ -292,7 +292,7 @@ function locateUser() {
 
             L.marker([lat, lon])
                 .addTo(map)
-                .bindPopup('Your location')
+                .bindPopup('Din Posisjon!')
                 .openPopup();
 
             fetchKommuneInfo(lat, lon);
