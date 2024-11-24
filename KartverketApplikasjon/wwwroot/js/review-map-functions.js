@@ -2,12 +2,12 @@ document.addEventListener('DOMContentLoaded', function () {
     console.log('Model Type:', mapModelData.type);
     console.log('Current Working URL:', window.location.href);
 
-    // Sjekk om kartet allerede eksisterer
+    // Checks if the map allready exist
     if (typeof map === 'undefined') {
-        // Hvis ikke, initialiser et nytt kart
+        // If not, initializes a new map
         var map = L.map('map').setView([62.0, 10.0], 4);
 
-        // Bruk Kartverkets tile layer
+        // Uses kartverkest tile layer
         L.tileLayer('https://cache.kartverket.no/v1/wmts/1.0.0/topo/default/webmercator/{z}/{y}/{x}.png', {
             attribution: 'Map data © Kartverket',
             maxZoom: 18,
@@ -17,8 +17,8 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log("Kartet er allerede initialisert.");
     }
 
-    // Sjøkart
-    // Sjekker om kartlagene allerede er definert
+    // Seamap
+    // Checks if the maplayers allready is defined 
     if (typeof standardTileLayer === 'undefined') {
         var standardTileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors'
@@ -31,15 +31,15 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Definerer Leaflet-kontrollen
+    // Defines the Leaflet-controller
     var SjoKartControl = L.Control.extend({
         options: {
-            position: 'topleft' // Plassering i kartet
+            position: 'topleft' // Placement in the map
         },
         onAdd: function (map) {
             var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
 
-            // Styling for kontrollen
+            // Styling of the controler
             container.style.backgroundColor = 'var(--leaflet-control-bg, white)';
             container.style.width = 'var(--leaflet-control-size, 2.5rem)';
             container.style.height = 'var(--leaflet-control-size, 2.5rem)';
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function () {
             container.style.fontSize = 'var(--leaflet-control-font-size, 1rem)';
             container.innerHTML = '🌊';
 
-            // Klikkhendelse for å bytte kartlag
+            // Clicking action to change maplayer
             container.onclick = function () {
                 if (map.hasLayer(sjokartTileLayer)) {
                     map.removeLayer(sjokartTileLayer);
@@ -66,10 +66,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Legger til kontrollen i kartet
+    // Adds the controller in the map
     map.addControl(new SjoKartControl());
 
-    // Funksjon for å style GeoJSON
+    // Function to style GeoJSON
     function styleGeoJson() {
         return {
             color: '#FF4444',
@@ -81,17 +81,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (mapModelData.type === "map") {
         (function () {
-            // Standardkoordinater for Norge dersom ingen er angitt
+            // Standardcoordinates for Norway when no other position is given
             var defaultLat = 62.0;
             var defaultLng = 10.0;
 
-            // Hent koordinater fra modellen
+            // Gets coordinates from the model
             var lat = mapModelData.latitude;
             var lng = mapModelData.longitude;
 
             console.log('Råkoordinater:', { lat, lng });
 
-            // Parse koordinater, bruk standard hvis ugyldig
+            // Parse coordinates, uses standard if invalid
             lat = !isNaN(parseFloat(lat)) ? parseFloat(lat) : defaultLat;
             lng = !isNaN(parseFloat(lng)) ? parseFloat(lng) : defaultLng;
 
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         .openPopup();
                 }
 
-                // Hent kommuneinformasjon
+                // Gets communicationinformation 
                 if (lat !== defaultLat && lng !== defaultLng) {
                     const params = new URLSearchParams({
                         nord: lat.toString(),

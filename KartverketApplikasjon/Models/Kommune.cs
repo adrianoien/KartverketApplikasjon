@@ -14,6 +14,6 @@ namespace KartverketApplikasjon.Models
         [JsonPropertyName("fylkesnavn")]
         public string Fylke { get; set; }
 
-        // Legg til flere felt hvis nødvendig basert på API-responsen
+        // Adds more fields if its needed based one the API-respons
     }
 }

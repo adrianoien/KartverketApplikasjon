@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using KartverketApplikasjon.Data;
 using KartverketApplikasjon.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using KartverketApplikasjon.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);

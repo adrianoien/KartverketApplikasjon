@@ -12,6 +12,12 @@
 
 <div class="container mt-4">
     <h2>Håndtering av innmeldinger</h2>
+    <div class="filter-section mb-4">
+        <h3>FILTRER ETTER KOMMUNE</h3>
+        <select id="kommuneFilter" class="form-control">
+            <option value="">Alle kommuner</option>
+        </select>
+    </div>
 
     <div class="mb-4">
         <div class="btn-group" role="group">
@@ -88,14 +94,8 @@
         </div>
     }
 
+   
     <h3 class="mt-4 mb-3">Punktendringer</h3>
-    <div class="filter-section mb-4">
-        <h3>FILTRER PÅ KOMMUNE</h3>
-        <select id="kommuneFilter" class="form-control">
-            <option value="">Alle kommuner</option>
-        </select>
-    </div>
-
     <div class="table-responsive">
         <table class="table table-striped">
             <thead>
@@ -261,47 +261,40 @@
 
 
 @section Scripts {
-    <script type="module">
-        import {
-            fetchMunicipality,
-            fetchMunicipalityForArea,
-            updateKommuneFilter,
-            filterByKommune,
-            initializeModalHandlers,
-        } from '/js/handle-registered-changes-functions.js';
-
-        document.addEventListener('DOMContentLoaded', () => {
-            // Fetch municipalities for map corrections
-            @foreach (var item in Model.MapCorrections)
+    <script src="~/js/correction-management.js"></script>
+    <script>
+        // Initialize with data from the model
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize map corrections
+        @foreach (var item in Model.MapCorrections)
+        {
+            if (!string.IsNullOrEmpty(item.Latitude) && !string.IsNullOrEmpty(item.Longitude))
             {
-                if (!string.IsNullOrEmpty(item.Latitude) && !string.IsNullOrEmpty(item.Longitude))
-                {
-                    @:fetchMunicipality(@item.Latitude, @item.Longitude, 'municipality-@item.Id');
-                }
+                @:window.fetchMunicipality(@item.Latitude, @item.Longitude, 'municipality-@item.Id');
             }
+        }
 
-            // Fetch municipalities for area changes
-            @foreach (var item in Model.AreaChanges)
+                // Initialize area changes
+        @foreach (var item in Model.AreaChanges)
+        {
+            if (!string.IsNullOrEmpty(item.GeoJson))
             {
-                if (!string.IsNullOrEmpty(item.GeoJson))
-                {
-                    @:fetchMunicipalityForArea(@Html.Raw(Json.Serialize(item.GeoJson)), 'municipality-area-@item.Id');
-                }
+                <text>
+                            try {
+                                            const geoJson = JSON.parse(@Html.Raw(Json.Serialize(item.GeoJson)));
+                            if (geoJson.geometry && geoJson.geometry.coordinates && geoJson.geometry.coordinates[0]) {
+                                                const coords = geoJson.geometry.coordinates[0];
+                                                const centerLat = coords.reduce((sum, coord) => sum + coord[1], 0) / coords.length;
+                                                const centerLon = coords.reduce((sum, coord) => sum + coord[0], 0) / coords.length;
+                            window.fetchMunicipality(centerLat, centerLon, 'municipality-area-@item.Id');
+                                            }
+                                        } catch (e) {
+                                console.error('Error parsing GeoJSON:', e);
+                            document.getElementById('municipality-area-@item.Id').textContent = 'Error';
+                                        }
+                </text>
             }
-
-            // Initialize filtering
-            document.getElementById('kommuneFilter')?.addEventListener('change', (e) => {
-                filterByKommune(e.target.value);
-            });
-
-            // Initialize modal handlers
-            const modal = document.getElementById('assignModal');
-            const closeBtn = document.querySelector('.close-button');
-            const searchInput = document.getElementById('saksbehandlerSearch');
-            const selectElement = document.getElementById('saksbehandlerSelect');
-            const noResults = document.getElementById('noResults');
-
-            initializeModalHandlers(modal, closeBtn, searchInput, selectElement, noResults);
-        });
+        }
+                });
     </script>
 }

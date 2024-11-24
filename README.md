@@ -141,3 +141,14 @@ De siste filene er Docker filer som gjør det mulig for oss å kjøre webapplika
 
 
 ## Code Changes (Changelog): Document changes to the code, including what was changed, who made the change, and when.
+
+
+## Database modell ![image](https://github.com/user-attachments/assets/7035948c-d78e-491c-ab0c-b81b6ad25088)
+
+Denne database modellen viser en oversikt over strukturen av håndtering av brukerinformasjon "UserData". Modellen viser tre modeller, "UserData", "Mapcorrections" og "GeoChange". UserData inneholder informasjonen til brukeren og hvilke datatyper informasjonen bruker, for eksempel, String =name, Int = id. userData har også UserRole da brukerne av applikasjonen kan velge mellom 2 roller, bruker og saksbehandler. 
+
+MapCorrections håndterer kart korreksjoner, med et bredt utvalg detajer som er viktig for saksbehandlere, for eksempel latitude, reviewed by, priority, id og mer. Mapcorrections lar oss spore hvem som har sendt inn korreksjoner og når, hvem som har tildelt korreksjonen, status og notater på korreksjonen. 
+
+Geochange handler om endringer knyttet til geografisk data. Tabellen har stor likhet med MapCorrections for uten om det at geoChange inkluderer et GeoJson felt.
+
+Begge tabellene har en submit/ reviews relasjon med userdata. 
