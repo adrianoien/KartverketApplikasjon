@@ -9,109 +9,117 @@
     Layout = "_Layout";
 }
 
-
 <div class="container mt-4">
     <h2>Håndtering av innmeldinger</h2>
-    <div class="filter-section mb-4">
-        <h3>FILTRER ETTER KOMMUNE</h3>
-        <select id="kommuneFilter" class="form-control">
-            <option value="">Alle kommuner</option>
-        </select>
-    </div>
 
     <div class="mb-4">
         <div class="btn-group" role="group">
             <a asp-action="Index" asp-route-status="Pending"
-               class="btn @(ViewBag.CurrentFilter == "Pågår" ? "btn-success" : "btn-outline-success")">
+               class="btn @(ViewData["CurrentFilter"].ToString() == "Pending" ? "btn-success" : "btn-outline-success")">
                 PÅGÅR
             </a>
             <a asp-action="Index" asp-route-status="Approved"
-               class="btn @(ViewBag.CurrentFilter == "Godkjent" ? "btn-success" : "btn-outline-success")">
+               class="btn @(ViewData["CurrentFilter"].ToString() == "Approved" ? "btn-success" : "btn-outline-success")">
                 GODKJENT
             </a>
             <a asp-action="Index" asp-route-status="Rejected"
-               class="btn @(ViewBag.CurrentFilter == "Avvist" ? "btn-success" : "btn-outline-success")">
+               class="btn @(ViewData["CurrentFilter"].ToString() == "Rejected" ? "btn-success" : "btn-outline-success")">
                 AVVIST
             </a>
-            <a asp-action="Index" asp-route-status="Commune"
-               class="btn @(ViewBag.CurrentFilter == "Kommune" ? "btn-success" : "btn-outline-success")">
-                KOMMUNE
-            </a>
             <a asp-action="Index" asp-route-status="All"
-               class="btn @(ViewBag.CurrentFilter == "Alle" ? "btn-success" : "btn-outline-success")">
+               class="btn @(ViewData["CurrentFilter"].ToString() == "All" ? "btn-success" : "btn-outline-success")">
                 ALLE
             </a>
         </div>
     </div>
 
-    @if (TempData["Success"] != null)
-    {
-       
-    }
-
-
-    <div id="assignModal" class="custom-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5>Tildel Sak</h5>
-                <span class="close-button">&times;</span>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <label class="form-label">Velg eller søk etter saksbehandler</label>
-                    <input type="text" id="saksbehandlerSearch" class="form-control mb-2"
-                           placeholder="Søk etter saksbehandler...">
-                    <select id="saksbehandlerSelect" class="form-select" size="6">
-                        @foreach (var handler in ViewBag.Saksbehandlere)
-                        {
-                            <option value="@handler.Email" data-name="@handler.Name.ToLower()">@handler.Name</option>
-                        }
-                    </select>
-                </div>
-                <div id="noResults" class="alert alert-info d-none">
-                    Ingen saksbehandlere funnet
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button id="cancelAssignment" class="btn btn-secondary">Avbryt</button>
-                <button id="saveAssignment" class="btn btn-primary">Lagre</button>
-            </div>
-        </div>
-    </div>
-                            
-                
-                   
-                
-            
-        
-  
-
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            @TempData["Success"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    }
-
-   
     <h3 class="mt-4 mb-3">Punktendringer</h3>
     <div class="table-responsive">
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>Beskrivelse</th>
-                    <th>Kommune</th>
-                    <th>Innsender</th>
-                    <th>Innsendelsdato</th>
-                    <th>Status</th>
+                    <th>Beskrivelse</th>                  
+                    <th>
+                        <a asp-action="Index"
+                           asp-route-sortOrder="@ViewData["KommuneSortParm"]"
+                           asp-route-status="@ViewData["CurrentFilter"]">
+                            Kommune
+                            @if (ViewData["CurrentSort"].ToString() == "kommune")
+                            {
+                                <i class="fas fa-sort-up"></i>
+                            }
+                            else if (ViewData["CurrentSort"].ToString() == "kommune_desc")
+                            {
+                                <i class="fas fa-sort-down"></i>
+                            }
+                            else
+                            {
+                                <i class="fas fa-sort"></i>
+                            }
+                        </a>
+                    </th>
+                    <th>
+                        <a asp-action="Index"
+                           asp-route-sortOrder="@ViewData["SubmitterSortParm"]"
+                           asp-route-status="@ViewData["CurrentFilter"]">
+                            Innsender
+                            @if (ViewData["CurrentSort"].ToString() == "submitter")
+                            {
+                                <i class="fas fa-sort-up"></i>
+                            }
+                            else if (ViewData["CurrentSort"].ToString() == "submitter_desc")
+                            {
+                                <i class="fas fa-sort-down"></i>
+                            }
+                            else
+                            {
+                                <i class="fas fa-sort"></i>
+                            }
+                        </a>
+                    </th>
+                    <th>
+                        <a asp-action="Index"
+                           asp-route-sortOrder="@ViewData["DateSortParm"]"
+                           asp-route-status="@ViewData["CurrentFilter"]">
+                            Innsendelsdato
+                            @if (ViewData["CurrentSort"].ToString() == "date")
+                            {
+                                <i class="fas fa-sort-up"></i>
+                            }
+                            else if (ViewData["CurrentSort"].ToString() == "date_desc")
+                            {
+                                <i class="fas fa-sort-down"></i>
+                            }
+                            else
+                            {
+                                <i class="fas fa-sort"></i>
+                            }
+                        </a>
+                    </th>
+
+                    <th>
+                        <a asp-action="Index"
+                           asp-route-sortOrder="@ViewData["StatusSortParm"]"
+                           asp-route-status="@ViewData["CurrentFilter"]">
+                            Status
+                            @if (ViewData["CurrentSort"].ToString() == "status")
+                            {
+                                <i class="fas fa-sort-up"></i>
+                            }
+                            else if (ViewData["CurrentSort"].ToString() == "status_desc")
+                            {
+                                <i class="fas fa-sort-down"></i>
+                            }
+                            else
+                            {
+                                <i class="fas fa-sort"></i>
+                            }
+                        </a>
+                    </th>
                     <th>Ansvarlig</th>
-                    
+                    <th></th>
                 </tr>
             </thead>
-            
-
-
             <tbody>
                 @if (Model.MapCorrections.Any())
                 {
@@ -119,18 +127,17 @@
                     {
                         <tr>
                             <td>@item.Description</td>
-
-                            <td id="municipality-@item.Id">Laster...</td>                           
+                            <td id="municipality-@item.Id">Laster...</td>
                             <td>@item.SubmittedBy</td>
                             <td>@item.SubmittedDate.ToString("g")</td>
                             <td>
                                 <span class="badge bg-@(item.Status switch {
-                        CorrectionStatus.Pending => "warning",
-                        CorrectionStatus.Approved => "success",
-                        CorrectionStatus.Rejected => "danger",
-                        _ => "secondary"
-                    })">
-                                    @item.Status.ToNorwegian()
+                                    CorrectionStatus.Pending => "warning",
+                                    CorrectionStatus.Approved => "success",
+                                    CorrectionStatus.Rejected => "danger",
+                                    _ => "secondary"
+                                })">
+                                    @item.Status
                                 </span>
                             </td>
                             <td style="text-align: left; width: 150px;">
@@ -159,10 +166,6 @@
                                     </ul>
                                 </div>
                             </td>
-                            
-                              
-                                
-                            
                             <td>
                                 <a asp-action="Review" asp-route-id="@item.Id" asp-route-type="map"
                                    class="btn btn-sm btn-primary">Gjennomgå</a>
@@ -187,11 +190,65 @@
                 <tr>
                     <th>Beskrivelse</th>
                     <th>Kommune</th>
-                    <th>Innsender</th>
-                    <th>Innsendelsdato</th>
-                    <th>Status</th>
+                    <th>
+                        <a asp-action="Index"
+                           asp-route-sortOrder="@ViewData["SubmitterSortParm"]"
+                           asp-route-status="@ViewData["CurrentFilter"]">
+                            Innsender
+                            @if (ViewData["CurrentSort"].ToString() == "submitter")
+                            {
+                                <i class="fas fa-sort-up"></i>
+                            }
+                            else if (ViewData["CurrentSort"].ToString() == "submitter_desc")
+                            {
+                                <i class="fas fa-sort-down"></i>
+                            }
+                            else
+                            {
+                                <i class="fas fa-sort"></i>
+                            }
+                        </a>
+                    </th>
+                    <th>
+                        <a asp-action="Index"
+                           asp-route-sortOrder="@ViewData["DateSortParm"]"
+                           asp-route-status="@ViewData["CurrentFilter"]">
+                            Innsendelsdato
+                            @if (ViewData["CurrentSort"].ToString() == "date")
+                            {
+                                <i class="fas fa-sort-up"></i>
+                            }
+                            else if (ViewData["CurrentSort"].ToString() == "date_desc")
+                            {
+                                <i class="fas fa-sort-down"></i>
+                            }
+                            else
+                            {
+                                <i class="fas fa-sort"></i>
+                            }
+                        </a>
+                    </th>
+                    <th>
+                        <a asp-action="Index"
+                           asp-route-sortOrder="@ViewData["StatusSortParm"]"
+                           asp-route-status="@ViewData["CurrentFilter"]">
+                            Status
+                            @if (ViewData["CurrentSort"].ToString() == "status")
+                            {
+                                <i class="fas fa-sort-up"></i>
+                            }
+                            else if (ViewData["CurrentSort"].ToString() == "status_desc")
+                            {
+                                <i class="fas fa-sort-down"></i>
+                            }
+                            else
+                            {
+                                <i class="fas fa-sort"></i>
+                            }
+                        </a>
+                    </th>
                     <th>Ansvarlig</th>
-                    
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -211,25 +268,24 @@
                                     CorrectionStatus.Rejected => "danger",
                                     _ => "secondary"
                                 })">
-                                    @item.Status.ToNorwegian()
+                                    @item.Status
                                 </span>
                             </td>
-                            
-                            <td style="text-align: left; width: 150px;">                                
+                            <td style="text-align: left; width: 150px;">
                                 <div class="assignment-dropdown" style="width: 100%;">
                                     <button class="assignment-button @(string.IsNullOrEmpty(item.AssignedTo) ? "unassigned" : "assigned")"
                                             type="button" data-bs-toggle="dropdown">
-                                            @{
-                                                if (string.IsNullOrEmpty(item.AssignedTo))
-                                                {
-                                                    @:UNASSIGNED
-                                                }
-                                                else
-                                                {
-                                                    var assignedUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == item.AssignedTo);
-                                                    @(assignedUser?.Name ?? "Unknown User")
-                                                }
+                                        @{
+                                            if (string.IsNullOrEmpty(item.AssignedTo))
+                                            {
+                                                @:UNASSIGNED
                                             }
+                                            else
+                                            {
+                                                var assignedUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == item.AssignedTo);
+                                                @(assignedUser?.Name ?? "Unknown User")
+                                            }
+                                        }
                                     </button>
                                     <ul class="dropdown-menu">
                                         <li>
