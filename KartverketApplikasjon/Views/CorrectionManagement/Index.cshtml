@@ -261,278 +261,47 @@
 
 
 @section Scripts {
-    <script>
-                    // Oppdater den eksisterende fetchMunicipality-funksjonen
-        async function fetchMunicipality(lat, lng, elementId) {
-            const params = new URLSearchParams({
-                nord: lat.toString(),
-                ost: lng.toString(),
-                koordsys: '4326'
-            });
+    <script type="module">
+        import {
+            fetchMunicipality,
+            fetchMunicipalityForArea,
+            updateKommuneFilter,
+            filterByKommune,
+            initializeModalHandlers,
+        } from '/js/handle-registered-changes-functions.js';
 
-            try {
-                const response = await fetch(`https://api.kartverket.no/kommuneinfo/v1/punkt?${params.toString()}`);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const data = await response.json();
-                const kommuneText = data && data.kommunenavn ? `${data.kommunenummer} ${data.kommunenavn}` : 'Ikke funnet';
-                document.getElementById(elementId).textContent = kommuneText;
-
-                // Kall updateKommuneFilter etter at kommunen er lastet
-                updateKommuneFilter();
-            } catch (error) {
-                console.error('Error fetching municipality:', error);
-                document.getElementById(elementId).textContent = 'Kunne ikke bestemme kommune';
-            }
-        }
-
-               function updateKommuneFilter() {
-            const kommuneCells = document.querySelectorAll('tbody tr td:nth-child(2)');
-            const kommuneSet = new Set();
-
-            kommuneCells.forEach(cell => {
-                const kommuneText = cell.textContent.trim();
-                if (kommuneText && kommuneText !== 'Laster...' && kommuneText !== 'Error' && kommuneText !== 'Ikke funnet' && kommuneText !== 'Kunne ikke bestemme kommune') {
-                    const [nummer, ...navnDeler] = kommuneText.split(' ');
-                    const navn = navnDeler.join(' ');
-                    kommuneSet.add({ nummer, navn, fulltext: kommuneText });
-                }
-            });
-
-            const kommuneFilter = document.getElementById('kommuneFilter');
-            if (kommuneFilter) {
-                // Behold "Alle kommuner" valget
-                kommuneFilter.innerHTML = '<option value="">Alle kommuner</option>';
-
-                // Legg til kommunene sortert på navn
-                [...kommuneSet]
-                    .sort((a, b) => a.navn.localeCompare(b.navn))
-                    .forEach(kommune => {
-                        const option = document.createElement('option');
-                        option.value = kommune.fulltext; // Behold hele teksten som verdi for filtrering
-                        option.textContent = kommune.navn; // Vis bare navnet i dropdown
-                        kommuneFilter.appendChild(option);
-                    });
-            }
-        }
-
-        // Legg til denne nye funksjonen for å håndtere filtrering
-        function filterByKommune(selectedKommune) {
-            const rows = document.querySelectorAll('tbody tr');
-            rows.forEach(row => {
-                const kommuneCell = row.querySelector('td:nth-child(2)');
-                if (kommuneCell) {
-                    if (!selectedKommune || kommuneCell.textContent.trim().includes(selectedKommune)) {
-                        row.style.display = '';
-                    } else {
-                        row.style.display = 'none';
-                    }
-                }
-            });
-        }
-
-        // Event listeners
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialiser første oppdatering når kommunedataene er lastet
-            const checkInterval = setInterval(() => {
-                const loadingElements = document.querySelectorAll('td:nth-child(2)');
-                const allLoaded = Array.from(loadingElements).every(el =>
-                    el.textContent.trim() !== 'Laster...' && el.textContent.trim() !== '');
-
-                if (allLoaded) {
-                    updateKommuneFilter();
-                    clearInterval(checkInterval);
-                }
-            }, 500);
-
-            // Stopp sjekking etter 10 sekunder
-            setTimeout(() => clearInterval(checkInterval), 10000);
-        });
-
-        // Observer for å oppdage endringer i tabellen
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (mutation.type === 'childList' || mutation.type === 'characterData') {
-                    setTimeout(updateKommuneFilter, 500); // Litt forsinkelse for å sikre at data er lastet
-                }
-            });
-        });
-
-        // Start observering av tabellen
-        document.querySelector('tbody') && observer.observe(document.querySelector('tbody'), {
-            childList: true,
-            subtree: true,
-            characterData: true
-        });
-        // Modal functionality
-        const modal = document.getElementById('assignModal');
-        const closeBtn = document.querySelector('.close-button');
-        const searchInput = document.getElementById('saksbehandlerSearch');
-        const selectElement = document.getElementById('saksbehandlerSelect');
-        const noResults = document.getElementById('noResults');
-        let selectedCorrectionId = null;
-        let selectedCorrectionType = null;
-
-        // Municipality fetching function
-        async function fetchMunicipality(lat, lng, elementId) {
-            const params = new URLSearchParams({
-                nord: lat.toString(),
-                ost: lng.toString(),
-                koordsys: '4326'
-            });
-
-            try {
-                const response = await fetch(`https://api.kartverket.no/kommuneinfo/v1/punkt?${params.toString()}`);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const data = await response.json();
-                document.getElementById(elementId).textContent =
-                    data && data.kommunenavn ? `${data.kommunenummer} ${data.kommunenavn}` : 'Ikke funnet';
-            } catch (error) {
-                console.error('Error fetching municipality:', error);
-                document.getElementById(elementId).textContent = 'Kunne ikke bestemme kommune';
-            }
-        }
-
-        // Fetch municipalities for map corrections
-        @foreach (var item in Model.MapCorrections)
-        {
-            if (!string.IsNullOrEmpty(item.Latitude) && !string.IsNullOrEmpty(item.Longitude))
+        document.addEventListener('DOMContentLoaded', () => {
+            // Fetch municipalities for map corrections
+            @foreach (var item in Model.MapCorrections)
             {
-                @:fetchMunicipality(@item.Latitude, @item.Longitude, 'municipality-@item.Id');
+                if (!string.IsNullOrEmpty(item.Latitude) && !string.IsNullOrEmpty(item.Longitude))
+                {
+                    @:fetchMunicipality(@item.Latitude, @item.Longitude, 'municipality-@item.Id');
+                }
             }
-        }
 
-        // Fetch municipalities for area changes
-        @foreach (var item in Model.AreaChanges)
-        {
-            if (!string.IsNullOrEmpty(item.GeoJson))
+            // Fetch municipalities for area changes
+            @foreach (var item in Model.AreaChanges)
             {
-                <text>
-                    try {
-                        const geoJson = JSON.parse(@Html.Raw(Json.Serialize(item.GeoJson)));
-                        if (geoJson.geometry && geoJson.geometry.coordinates && geoJson.geometry.coordinates[0]) {
-                            const coords = geoJson.geometry.coordinates[0];
-                            const centerLat = coords.reduce((sum, coord) => sum + coord[1], 0) / coords.length;
-                            const centerLon = coords.reduce((sum, coord) => sum + coord[0], 0) / coords.length;
-                            fetchMunicipality(centerLat, centerLon, 'municipality-area-@item.Id');
-                        }
-                    } catch (e) {
-                        console.error('Error parsing GeoJSON:', e);
-                        document.getElementById('municipality-area-@item.Id').textContent = 'Error';
-                    }
-                </text>
-            }
-        }
-
-            // Show modal when "Assign Case" is clicked
-            document.addEventListener('click', function (e) {
-                if (e.target.dataset.action === 'assign') {
-                    selectedCorrectionId = e.target.dataset.correctionId;
-                    selectedCorrectionType = e.target.dataset.correctionType;
-                    modal.style.display = 'block';
-                    searchInput.value = '';
-                    filterOptions('');
+                if (!string.IsNullOrEmpty(item.GeoJson))
+                {
+                    @:fetchMunicipalityForArea(@Html.Raw(Json.Serialize(item.GeoJson)), 'municipality-area-@item.Id');
                 }
+            }
+
+            // Initialize filtering
+            document.getElementById('kommuneFilter')?.addEventListener('change', (e) => {
+                filterByKommune(e.target.value);
             });
 
-        // Handle search input
-        searchInput.addEventListener('input', function (e) {
-            filterOptions(e.target.value.toLowerCase());
-        });
+            // Initialize modal handlers
+            const modal = document.getElementById('assignModal');
+            const closeBtn = document.querySelector('.close-button');
+            const searchInput = document.getElementById('saksbehandlerSearch');
+            const selectElement = document.getElementById('saksbehandlerSelect');
+            const noResults = document.getElementById('noResults');
 
-        // Close modal handlers
-        closeBtn.onclick = function() {
-            modal.style.display = 'none';
-        }
-
-        document.getElementById('cancelAssignment').onclick = function() {
-            modal.style.display = 'none';
-        }
-
-        // Close if clicking outside modal
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = 'none';
-            }
-        }
-
-        // Search functionality
-        let searchTimeout;
-        searchInput.addEventListener('input', function() {
-            clearTimeout(searchTimeout);
-            const searchTerm = this.value.trim();
-            
-            searchTimeout = setTimeout(() => {
-                if (searchTerm.length >= 2) {
-                    fetchSaksbehandlere(searchTerm);
-                } else {
-                    searchResults.innerHTML = '';
-                }
-            }, 300);
-        });
-
-       
-
-      
-        // Filter options based on search
-        function filterOptions(searchTerm) {
-            let hasVisibleOptions = false;
-            Array.from(selectElement.options).forEach(option => {
-                const name = option.getAttribute('data-name');
-                const email = option.value.toLowerCase();
-                const matches = name.includes(searchTerm) || email.includes(searchTerm);
-                option.style.display = matches ? '' : 'none';
-                if (matches) hasVisibleOptions = true;
-            });
-
-            noResults.classList.toggle('d-none', hasVisibleOptions);
-        }
-
-        // Select handler
-        function selectHandler(handler) {
-            document.getElementById('selectedHandler').style.display = 'block';
-            document.getElementById('selectedHandlerName').textContent = handler.name;
-            document.getElementById('selectedHandlerId').value = handler.email;
-            searchResults.innerHTML = '';
-            searchInput.value = '';
-        }
-
-        // Handle assignment save
-        document.getElementById('saveAssignment').addEventListener('click', async function () {
-            // Get value directly from select element
-            const selectedHandlerId = document.getElementById('saksbehandlerSelect').value;
-            console.log('Selected handler ID:', selectedHandlerId); // For debugging
-
-            if (!selectedHandlerId) {
-                alert('Vennligst velg en saksbehandler');
-                return;
-            }
-
-            try {
-                const response = await fetch('/CorrectionManagement/AssignCase', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        correctionId: selectedCorrectionId,
-                        correctionType: selectedCorrectionType,
-                        assignTo: selectedHandlerId
-                    })
-                });
-
-                if (response.ok) {
-                    location.reload();
-                } else {
-                    alert('Feil ved tildeling av sak');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Feil ved tildeling av sak');
-            }
+            initializeModalHandlers(modal, closeBtn, searchInput, selectElement, noResults);
         });
     </script>
 }
