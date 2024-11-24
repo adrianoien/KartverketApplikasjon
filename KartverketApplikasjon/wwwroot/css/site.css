@@ -74,8 +74,34 @@ body {
         cursor: pointer;
     }
 
+
+
 #searchResults {
     margin-top: 10px;
+}
+
+.table th a {
+    color: #333;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+    .table th a:hover {
+        color: #007bff;
+    }
+
+.table th i {
+    margin-left: 5px;
+}
+
+.fa-sort {
+    color: #ddd;
+}
+
+.fa-sort-up, .fa-sort-down {
+    color: #007bff;
 }
 
     #searchResults div {

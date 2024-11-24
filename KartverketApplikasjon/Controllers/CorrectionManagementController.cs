@@ -27,8 +27,15 @@ public class CorrectionManagementController : Controller
     }
 
     // List all corrections with filtering
-    public async Task<IActionResult> Index(string status = "Pending")
+    public async Task<IActionResult> Index(string status = "Pending", string sortOrder = "")
     {
+        ViewData["DateSortParm"] = sortOrder == "date" ? "date_desc" : "date";
+        ViewData["StatusSortParm"] = sortOrder == "status" ? "status_desc" : "status";
+        ViewData["SubmitterSortParm"] = sortOrder == "submitter" ? "submitter_desc" : "submitter";
+        ViewData["KommuneSortParm"] = sortOrder == "kommune" ? "kommune_desc" : "kommune";
+        ViewData["CurrentSort"] = sortOrder;
+        ViewData["CurrentFilter"] = status;
+
         CorrectionStatus? correctionStatus = status switch
         {
             "Approved" => CorrectionStatus.Approved,
@@ -43,9 +50,18 @@ public class CorrectionManagementController : Controller
         {
             mapCorrectionsQuery = mapCorrectionsQuery.Where(c => c.Status == correctionStatus.Value);
         }
-        IEnumerable<MapCorrections> mapCorrections = await mapCorrectionsQuery
-            .OrderByDescending(c => c.SubmittedDate)
-            .ToListAsync();
+
+        // Update sorting for map corrections (fjernet kommune-sortering siden vi henter det fra API)
+        mapCorrectionsQuery = sortOrder switch
+        {
+            "date" => mapCorrectionsQuery.OrderBy(c => c.SubmittedDate),
+            "date_desc" => mapCorrectionsQuery.OrderByDescending(c => c.SubmittedDate),
+            "status" => mapCorrectionsQuery.OrderBy(c => c.Status),
+            "status_desc" => mapCorrectionsQuery.OrderByDescending(c => c.Status),
+            "submitter" => mapCorrectionsQuery.OrderBy(c => c.SubmittedBy),
+            "submitter_desc" => mapCorrectionsQuery.OrderByDescending(c => c.SubmittedBy),
+            _ => mapCorrectionsQuery.OrderByDescending(c => c.SubmittedDate)
+        };
 
         // Get area changes
         var areaChangesQuery = _context.GeoChanges.AsQueryable();
@@ -53,13 +69,74 @@ public class CorrectionManagementController : Controller
         {
             areaChangesQuery = areaChangesQuery.Where(c => c.Status == correctionStatus.Value);
         }
-        IEnumerable<GeoChange> areaChanges = await areaChangesQuery
-            .OrderByDescending(c => c.SubmittedDate)
-            .ToListAsync();
 
-        ViewBag.CurrentFilter = status;
-        ViewBag.Saksbehandlere = await GetAllSaksbehandlereAsync();
+        // Update sorting for area changes (fjernet kommune-sortering siden vi henter det fra API)
+        areaChangesQuery = sortOrder switch
+        {
+            "date" => areaChangesQuery.OrderBy(c => c.SubmittedDate),
+            "date_desc" => areaChangesQuery.OrderByDescending(c => c.SubmittedDate),
+            "status" => areaChangesQuery.OrderBy(c => c.Status),
+            "status_desc" => areaChangesQuery.OrderByDescending(c => c.Status),
+            "submitter" => areaChangesQuery.OrderBy(c => c.SubmittedBy),
+            "submitter_desc" => areaChangesQuery.OrderByDescending(c => c.SubmittedBy),
+            _ => areaChangesQuery.OrderByDescending(c => c.SubmittedDate)
+        };
+
+        ViewData["Saksbehandlere"] = await GetAllSaksbehandlereAsync();
+
+        IEnumerable<MapCorrections> mapCorrections = await mapCorrectionsQuery.ToListAsync();
+        IEnumerable<GeoChange> areaChanges = await areaChangesQuery.ToListAsync();
+
+        // Hvis vi trenger å sortere på kommune, gjør det etter at dataene er hentet
+        if (sortOrder == "kommune" || sortOrder == "kommune_desc")
+        {
+            var kommuneCache = new Dictionary<string, string>(); // Cache for kommune-oppslag
+
+            // Hent kommune for hver korreksjon
+            foreach (var correction in mapCorrections)
+            {
+                var key = $"{correction.Latitude},{correction.Longitude}";
+                if (!kommuneCache.ContainsKey(key))
+                {
+                    try
+                    {
+                        var kommuneInfo = await GetKommuneInfo(correction.Latitude, correction.Longitude);
+                        kommuneCache[key] = kommuneInfo;
+                    }
+                    catch
+                    {
+                        kommuneCache[key] = ""; // Tom streng hvis oppslag feiler
+                    }
+                }
+            }
+
+            // Sorter basert på kommune
+            mapCorrections = sortOrder == "kommune"
+                ? mapCorrections.OrderBy(c => kommuneCache[$"{c.Latitude},{c.Longitude}"])
+                : mapCorrections.OrderByDescending(c => kommuneCache[$"{c.Latitude},{c.Longitude}"]);
+        }
+
         return View((MapCorrections: mapCorrections, AreaChanges: areaChanges));
+    }
+
+    // Hjelpemetode for å hente kommuneinfo
+    private async Task<string> GetKommuneInfo(string lat, string lon)
+    {
+        try
+        {
+            var client = new HttpClient();
+            var response = await client.GetAsync($"https://api.kartverket.no/kommuneinfo/v1/punkt?nord={lat}&ost={lon}&koordsys=4326");
+            if (response.IsSuccessStatusCode)
+            {
+                var data = await response.Content.ReadFromJsonAsync<dynamic>();
+                return data?.kommunenavn ?? "";
+            }
+        }
+        catch
+        {
+            // Logg feilen hvis nødvendig
+        }
+        return "";
     }
 
     // Show detailed view of a correction
