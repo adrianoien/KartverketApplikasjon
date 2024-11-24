@@ -7,16 +7,51 @@ using KartverketApplikasjon.Data;
 
 namespace KartverketApplikasjon.Controllers
 {
+
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDbContext _context;
 
-        // Constructor for HomeController, initializing the logger and database context
         public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
         {
             _logger = logger;
             _context = context;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteCorrection(int id, string type)
+        {
+            try
+            {
+                if (type == "point")
+                {
+                    var correction = await _context.MapCorrections
+                        .FirstOrDefaultAsync(c => c.Id == id && c.SubmittedBy == User.Identity.Name);
+
+                    if (correction != null)
+                    {
+                        _context.MapCorrections.Remove(correction);
+                        await _context.SaveChangesAsync();
+
+                        return Json(new
+                        {
+                            success = true,
+                            latitude = correction.Latitude,
+                            longitude = correction.Longitude
+                        });
+                    }
+                    return Json(new { success = false, message = "Markør ikke funnet" });
+                }
+
+                // Legg til denne default return statement
+                return Json(new { success = false, message = "Ugyldig type" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error deleting correction: {ex.Message}");
+                return Json(new { success = false, message = "En feil oppstod ved sletting av markøren" });
+            }
         }
 
         public IActionResult Index()

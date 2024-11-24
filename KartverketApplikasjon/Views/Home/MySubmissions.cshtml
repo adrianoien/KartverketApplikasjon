@@ -1,23 +1,27 @@
 ﻿@model KartverketApplikasjon.Models.UnifiedMapViewModel
-
 <div class="container">
     <h2>Mine innmeldinger</h2>
-
     <div class="row mb-4">
         <div class="col">
             <h3>Punktkorreksjoner</h3>
             @foreach (var submission in Model.Positions)
             {
-                <div class="card mb-3">
+                <div class="card mb-3" id="correction-@submission.Id">
                     <div class="card-body">
                         <h5 class="card-title">Punktkorreksjoner</h5>
                         <div class="mb-2">
                             <span class="badge bg-@(submission.Status switch {
-    CorrectionStatus.Pending => "warning",
-    CorrectionStatus.Approved => "success",
-    CorrectionStatus.Rejected => "danger",
-    _ => "secondary"
-})">@submission.Status.ToNorwegian()</span>
+                                CorrectionStatus.Pending => "warning",
+                                CorrectionStatus.Approved => "success",
+                                CorrectionStatus.Rejected => "danger",
+                                _ => "secondary"
+                            })">@submission.Status.ToNorwegian()</span>
+
+                            <!-- Slett-knapp -->
+                            <button class="btn btn-danger btn-sm float-end"
+                                    onclick="deleteCorrection(@submission.Id)">
+                                Slett
+                            </button>
                         </div>
                         <p class="card-text">@submission.Description</p>
                         <p class="card-text"><small>Koordinater: [@submission.Latitude, @submission.Longitude]</small></p>
@@ -33,27 +37,28 @@
                 </div>
             }
         </div>
-
-        <div class="col">
-            <h3>Områdeendringer</h3>
-            @foreach (var change in Model.Changes)
-            {
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <h5 class="card-title">Områdeendringer</h5>
-                        <div class="mb-2">
-                            <span class="badge bg-@(change.Status switch {
-                CorrectionStatus.Pending => "warning",
-                CorrectionStatus.Approved => "success",
-                CorrectionStatus.Rejected => "danger",
-                _ => "secondary"
-            })">@change.Status.ToNorwegian()</span>
-                        </div>
-                        <p class="card-text">@change.Description</p>
-                        <p class="card-text"><small class="text-muted">Innsendt: @change.SubmittedDate.ToString("g")</small></p>
-                    </div>
-                </div>
-            }
-        </div>
     </div>
 </div>
+
+<script>
+    async function deleteCorrection(id) {
+        if (confirm('Er du sikker på at du vil slette denne innmeldingen?')) {
+            try {
+                const response = await fetch(`/Home/DeleteCorrection?id=${id}&type=point`, {
+                    method: 'POST'
+                });
+                if (response.ok) {
+                    // Fjern elementet fra siden
+                    document.getElementById(`correction-${id}`).remove();
+                    // Oppdater siden for å oppdatere kartet
+                    location.reload();
+                } else {
+                    alert('Kunne ikke slette innmeldingen');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('En feil oppstod ved sletting');
+            }
+        }
+    }
+</script>

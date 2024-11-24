@@ -362,3 +362,14 @@ function setupFormListener() {
         });
     }
 }
+// I map-functions.js eller tilsvarende fil hvor du håndterer kartet
+function removeMarker(id) {
+    // Finn markøren basert på ID
+    const marker = markers.find(m => m.id === id);
+    if (marker) {
+        // Fjern markøren fra kartet
+        map.removeLayer(marker);
+        // Fjern markøren fra markers-array
+        markers = markers.filter(m => m.id !== id);
+    }
+}
