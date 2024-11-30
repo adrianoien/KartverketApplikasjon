@@ -42,18 +42,14 @@ namespace KartverketApplikasjon.Services
         }
 
         // Password encryption 
-        private string HashPassword(string password)
-        {
-            using (var sha256 = SHA256.Create())
-            {
-                var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-                return BitConverter.ToString(hashedBytes).Replace("-", "").ToLower();
-            }
-        }
-        // Compares hashed version of a password with a plaintext string
-        private bool VerifyPassword(string password, string hashedPassword)
-        {
-            return HashPassword(password) == hashedPassword;
-        }
+      private string HashPassword(string password)
+{
+    return BCrypt.Net.BCrypt.HashPassword(password);
+}
+
+    private bool VerifyPassword(string password, string hashedPassword)
+{
+    return BCrypt.Net.BCrypt.Verify(password, hashedPassword);
+}
     }
 }
